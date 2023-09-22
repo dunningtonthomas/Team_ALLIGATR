@@ -1,0 +1,42 @@
+\begin{tabular}{lllll}
+ID & Requirement & ParentRequirement & ChildRequirement & VerificationMethod \\ 
+\hline 
+AUT 1 & All UAS motion, besides takeoff and landing, shall stay within the identified 150 ft x 150 ft environment. & FR 5 & AUT 1.1 & A \\ 
+AUT 2 & All UAS motion, besides takeoff and landing, shall be between 30-60 ft relative to the ground. & FR 6 & AUT 2.1 & A \\ 
+AUT 3 & UAS shall autonomously recognize and transition to the search phase as needed. & FR 1 & AUT 3.1, 3.2, 3.3 & D \\ 
+AUT 4 & UAS shall autonomously recognize and transition to the RGV trailing phase as needed. & FR 1 & AUT 4.1, 4.2 & D \\ 
+AUT 5 & UAS shall autonomously recognize and transition to the coarse localization phase as needed. & FR 2 & AUT 5.1 & D \\ 
+AUT 6 & UAS shall autonomously recognize and transition to the fine localization phase as needed. & FR 2 & AUT 6.1 & D \\ 
+AUT 7 & UAS shall autonomously recognize and transition to the joint localization phase as needed. & FR 1, FR 2 & AUT 7.1 & D \\ 
+AUT 8 & UAS shall autonomously recognize when the mission has been completed. & FR 8 & AUT 8.1, 8.2, 8.3 & D \\ 
+AUT 9 & UAS shall autonomously perform all motion planning necessary during the searching phase. & FR 8 & AUT 9.1, 9.2 & A \\ 
+AUT 10 & UAS shall autonomously perform all motion planning necessary during the trailing phase. & FR 8 & AUT 10.1, 10.2 & A \\ 
+AUT 11 & UAS shall autonomously perform all motion planning necessary during the coarse localization phase. & FR 8 & AUT 11.1, 11.2 & A \\ 
+AUT 12 & UAS shall autonomously perform all motion planning necessary during the fine localization phase. & FR 8 & AUT 12.1, 12.2 & A \\ 
+AUT 13 & UAS shall autonomously perform all motion planning necessary during the joint localization phase. & FR 8 & AUT 13.1, AUT 13.2 & A \\ 
+AUT 14 & UAS shall autonomously interpret and send the necessary information to the user via a ground UI. & FR 7 & AUT 14.1, 14.2, 14.3, 14.4, 14.5 & T \\ 
+AUT 15 & UAS shall have the capability to initiate and disengage the autonomous flight via a ground UI. & FR 7 & AUT 15.1, 15.2, 15.3, 15.4 & T \\ 
+AUT 16 & UAS shall perform all autonomous motion in a safe and controlled way. & FR 8 & AUT 16.1, 16.2, 16.3, 16.4 & I \\ 
+UAS 1 & UAS shall accommodate for the weight and size of the payloads & FR 8 & UAS 1.1, 1.2 & T \\ 
+UAS 2 & UAS shall provide necessary electrical power to all systems for a 15-minute flight & FR 8 & UAS 2.1, 2.2 & T \\ 
+UAS 3 & UAS shall provide the necessary computational power for all operations during a 15-minute flight & FR 1, FR 2 &  & T \\ 
+UAS 4 & UAS shall provide the framework for manual flight & FR 3 & UAS 4.1 & T \\ 
+UAS 5 & UAS shall provide the framework for autonomous flight & FR 1, FR 2 &  & T \\ 
+UAS 6 & UAS shall have all necessary sensors to determine attitude & FR 1, FR 2 &  & T/A \\ 
+UAS 7 & UAS shall be capable of transferring and recieving all necessary operational, flight, and sensor data to and from the 
+ground station & FR 7 & UAS 7.1 & T \\ 
+UAS 8 & UAS shall be capable of storing data that will be accessible at the end of the flight & FR 7 &  & T \\ 
+UAS 9 & UAS shall be able to maintain pace with both RGVs & FR 1, FR 2 & UAS 9.1 & T \\ 
+UAS 10 & UAS shall adhere to all relevant FAA and CU regulations & FR 9 & UAS 10.1, 10.2, 10.3, 10.4, 10.5, 
+10.6, 10.7, 10.8, 10.9, 10.10 & T/I \\ 
+SNS 1 & UAS shall display live aircraft states and desired RGV tracking artifacts to the operator at a ground control station through a user interface (UI). & FR 7 & SNS 1.1, 1.2, 1.3 & T \\ 
+SNS 2 & UAS shall use a RGB camera as its primary sensor. & FR 2 & SNS 2.1, 2.2, 2.3 & I \\ 
+SNS 3 & UAS shall have an onboard secondary sensor. & FR 2 & SNS 3.1, 3.2 & I \\ 
+SNS 4 & UAS shall be able to identify a given RGV during the search phase & FR 2 & SNS 4.1 & D \\ 
+SNS 5 & UAS shall be able to continuously locate a given RGV during trailing & FR 2 & SNS 5.1, 5.2 & D \\ 
+SNS 6 & UAS shall be able to coarsely localize a given RGV for at least 60 seconds & FR 2 & SNS 6.1, 6.2, 6.3, 6.4, 6.5 & D \\ 
+SNS 7 & UAS shall be able to finely localize a given RGV for at least 30 seconds & FR 2 & SNS 7.1, 7.2, 7.3, 7.4, 7.5 & D \\ 
+SNS 7 & UAS shall be able to jointly localize both RGVs for at least 20 seconds & FR 2 & SNS 8.1, 8.2, 8.3 & D \\ 
+SNS 8 & UAS shall adhere to all FCC regulations. & FR 9 & SNS 9.1 & T/I \\ 
+\hline 
+\end{tabular}

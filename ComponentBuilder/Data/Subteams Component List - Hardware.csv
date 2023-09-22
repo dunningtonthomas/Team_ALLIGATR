@@ -1,0 +1,5 @@
+Primary Sensor,Sensing Type,Max Range (m),Min Range (m),Cost (USD),FOV (deg),Power Requirements (W),Resolution (pixel),Data Stream Type,Output Speed (kbps),Connection Type,Weight (lbs),Web Link,Additional Comments
+Test Sensor,Depth,30,0.1,150,100,,1080x720,I2C,400,USB-C,2,NA,NA
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+Secondary Sensor,Sensing Type,Max Range (m),Min Range (m),Cost,FOV (deg),Power Requirements (W),Resolution (pixel),Data Stream Type,Output Speed (kbps),Connection Type,Weight (lbs),Web Link,Additional Comments
