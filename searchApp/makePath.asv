@@ -1,0 +1,27 @@
+function [path] = makePath(xBoundary, yBoundary, width, speed)
+% This function takes in the x and y boundary and creates a grid search
+% path, returning an array. 
+% Width is the width of the FOV circle
+% Speed is the ft/s rate of drone, want to take 1 step 
+    
+    % Get limits
+    xMin = min(xBoundary);
+    xMax = max(xBoundary);
+    yMin = min(yBoundary);
+    yMax = max(yBoundary);
+
+    % Decide the number of passes in y direction
+    % numX = ceil((xMax - xMin)/width);
+    numY = ceil((yMax - yMin)/width);
+
+    % will make grid path so that loops through every x for numY passes,
+    % seperated width apart
+    for i = 1:length(numY)
+
+
+
+
+
+    end
+end
+
