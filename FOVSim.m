@@ -24,14 +24,17 @@ FOVx = radius * cos(angles) + center(1);
 FOVy = radius * sin(angles) + center(2);
 
 %Initial RGV Position
-RGVPos = [75; 75];
+RGVPos = [bound*rand(1); bound*rand(1)]; %Random initial position
 
 %Drone positions defined by search algorithm
 sizePos = bound / 2 / tStep;
 dronePositions = [linspace(0, 150, sizePos); linspace(0, 150, sizePos)]; %This will come from search algorithm
 
-%Get RGV positions for the length of the simulation
-RGVPositions = [linspace(75, 120, sizePos/2), linspace(120, 75, sizePos/2); linspace(75, 115, sizePos/2), linspace(115, 150, sizePos/2)];
+%Get RGV positions for the length of the simulation, based on a random
+%direction
+randX = (sign(rand(1) - 0.5) > 0) * bound;
+randY = (sign(rand(1) - 0.5) > 0) * bound;
+RGVPositions = [linspace(RGVPos(1), randX, sizePos/2); linspace(RGVPos(2), randY, sizePos/2)];
 
 %% Simulation
 %Initial Drone position
