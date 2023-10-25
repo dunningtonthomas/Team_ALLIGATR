@@ -52,9 +52,7 @@ centroids_x = centroids_x.astype(int)
 centroids_y = centroids_y.astype(int)
 
 
-# Draw detected blobs as red circles.
-# cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS ensures
-# the size of the circle corresponds to the size of blob#
+# Draw centroids of detected blobs
 im_with_centroids = im
 for centroid_x,centroid_y in zip(centroids_x,centroids_y):
     im_with_centroids = cv2.circle(im_with_centroids, (centroid_x,centroid_y), radius=0, color=(0,255,0), thickness=5)
