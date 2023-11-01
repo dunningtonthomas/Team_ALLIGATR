@@ -53,7 +53,6 @@ def aruco_display(corners, ids, rejected, image):
 
 
 
-
 # Path for aruco tags
 path = "Autonomous-AerialLocalizationTeam1/ARTags/Markers/"
 
@@ -77,21 +76,86 @@ cv2.waitKey(0)
 # Close all of the windows
 cv2.destroyAllWindows()
 
-
+  
 # Detect the marker
 corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
 
 # Draw the detection
 image = aruco_display(corners, ids, rejected, img)
 
-# Display the read in image
+# Display the image with the detected AR tag
 cv2.imshow("ArUco Marker", image)
+
+# Image is 1280 by 720 pixels
+xPixels = 1280
+yPixels = 720
+
+# Field of view
+FOV = 100 * np.pi / 180 # (RAD)
+
+# Define the center of the image
+cx = xPixels / 2
+cy = yPixels / 2
+
+# Define the focal length and principal point translation, this is the intrinsic camera matrix
+f = 0.01	# Focal length in m
+fx = 10	
+fy = 10
+
+# Define the height and angle of the camera
+H = 30
+alpha = 0
+
+# Get the centroid coordinates of the AR tag
+firstCorners = corners[0][0]
+topLeft = firstCorners[0]
+bottomRight = firstCorners[2]
+
+xf = (topLeft[0] + bottomRight[0]) / 2
+yf = (topLeft[1] + bottomRight[1]) / 2
+
+print("Center of AR Tag (Pixels): ", xf, " ", yf)
+
+# %% Using the center, find the relative position of the RGV
+
+# Compute the 2D normalized coordinates with respect to the intrinsic camera matrix
+xn = (xf - cx) / fx
+yn = (yf - cy) / fx
+
+# Calcaulte the depth of the principal point projection on the ground
+Zp = H / np.cos(alpha)
+
+# Angles from the field of view
+vertAng = FOV / 2
+horzAng = FOV / 2
+
+# Number of pixels
+dx = f * 1000 * np.tan(horzAng)
+dy = f * 1000 * np.tan(vertAng)
+
+# Scaling factors
+sx = cx / dx
+sy = cy / dy
+
+# Distance calculation
+d = np.sqrt(((cx - xf) / sx)**2 + ((cy - yf) / sy)**2)
+theta = np.arctan(d / f)
+Z = Zp / np.cos(theta)
+
+# Camera frame coordinates
+xc = xn * Z
+yc = yn * Z
+zc = Z
+
+# Print results
+print("Camera frame coordinates: ", "X: ", xc, "Y: ", yc, "Z: ", zc)
 
 # Wait until a key is pressed
 cv2.waitKey(0)
 
 # Close all of the windows
 cv2.destroyAllWindows()
+
 
 
 
