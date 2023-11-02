@@ -7,7 +7,8 @@ start = time.time()
 
 
 # Read image
-im = cv2.imread(r"c:\Users\ykelm\Autonomous-AerialLocalizationTeam1\Primary Sensing\square_in_field.png",1)
+#im = cv2.imread(r"c:\Users\ykelm\Autonomous-AerialLocalizationTeam1\Primary Sensing\square_in_field.png",1)
+im = cv2.imread("square_in_field.png",1)
 
 # Read video feed
 #vid = cv2.VideoCapture(r"c:\Users\ykelm\Autonomous-AerialLocalizationTeam1\Primary Sensing\sample_vid.mp4",1)
