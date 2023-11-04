@@ -94,6 +94,10 @@ while cap.isOpened():
     # Get the current video feed frame
     ret, img = cap.read()
     
+	# Check if the image is empty
+    if img is None:
+        break
+    
     # Locate the Aruco tag
     corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
     image = aruco_display(corners, ids, rejected, img)
