@@ -84,7 +84,7 @@ cv2.destroyAllWindows()
 
 # %% Video Capture With Webcam
 path = "ARTags/Videos/"
-videoPath = path + "AR_Tag_Test.mp4"
+videoPath = path + "AR_Tag_Test_Trim.mp4"
 cap = cv2.VideoCapture(videoPath)
 
 #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
