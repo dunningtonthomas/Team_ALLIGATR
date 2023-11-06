@@ -51,35 +51,37 @@ def aruco_display(corners, ids, rejected, image):
 
     return image
 
-
-# Path for aruco tags
-path = "ARTags/Markers/"
-
-# Get predefined dictionary
+# Dictionary
 aruco_type = "DICT_6X6_250"
 testDict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[aruco_type])
-
-# Insantiate parameters
 arucoParams = cv2.aruco.DetectorParameters()
 
-# Read in the image
-imagePath = path + "ExampleMarker.png"
-img = cv2.imread(imagePath, cv2.IMREAD_COLOR)
+# Path for aruco tags
+# path = "ARTags/Markers/"
 
-# Detect the marker
-corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
+# # Get predefined dictionary
 
-# Draw the detection
-image = aruco_display(corners, ids, rejected, img)
+# # Insantiate parameters
 
-# Display the image with the detected AR tag
-cv2.imshow("ArUco Marker", image)
 
-# Wait until a key is pressed
-cv2.waitKey(0)
+# # Read in the image
+# imagePath = path + "ExampleMarker.png"
+# img = cv2.imread(imagePath, cv2.IMREAD_COLOR)
 
-# Close all of the windows
-cv2.destroyAllWindows()
+# # Detect the marker
+# corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
+
+# # Draw the detection
+# image = aruco_display(corners, ids, rejected, img)
+
+# # Display the image with the detected AR tag
+# cv2.imshow("ArUco Marker", image)
+
+# # Wait until a key is pressed
+# cv2.waitKey(0)
+
+# # Close all of the windows
+# cv2.destroyAllWindows()
 
 
 # %% Video Capture With Webcam
