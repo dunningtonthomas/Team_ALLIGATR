@@ -53,7 +53,7 @@ def aruco_display(corners, ids, rejected, image):
 
 
 # Path for aruco tags
-path = "Autonomous-AerialLocalizationTeam1/ARTags/Markers/"
+path = "ARTags/Markers/"
 
 # Get predefined dictionary
 aruco_type = "DICT_6X6_250"
@@ -80,6 +80,41 @@ cv2.waitKey(0)
 
 # Close all of the windows
 cv2.destroyAllWindows()
+
+
+# %% Video Capture With Webcam
+path = "ARTags/Videos/"
+videoPath = path + "AR_Tag_Test.mp4"
+cap = cv2.VideoCapture(videoPath)
+
+#cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+#cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+
+while cap.isOpened():
+    # Get the current video feed frame
+    ret, img = cap.read()
+    
+	# Check if the image is empty
+    if img is None:
+        break
+    
+    # Locate the Aruco tag
+    corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
+    image = aruco_display(corners, ids, rejected, img)
+    
+	# Display the frame
+    cv2.imshow('frame', image)
+    
+	# Quit
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q"):
+        break
+    
+	
+cv2.destroyAllWindows()
+cap.release()	
+
+
 
 # %% Attempt to localize
 
