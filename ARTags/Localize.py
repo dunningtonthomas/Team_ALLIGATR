@@ -93,8 +93,10 @@ cap = cv2.VideoCapture(videoPath)
 #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
 while cap.isOpened():
+    print("test1")
     # Get the current video feed frame
     ret, img = cap.read()
+    print("test2")
     
 	# Check if the image is empty
     if img is None:
@@ -102,10 +104,13 @@ while cap.isOpened():
     
     # Locate the Aruco tag
     corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
+    print("test3")
     image = aruco_display(corners, ids, rejected, img)
+    print("test4")
     
 	# Display the frame
     cv2.imshow('frame', image)
+    print("test5")
     
 	# Quit
     key = cv2.waitKey(1) & 0xFF
