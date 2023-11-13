@@ -135,6 +135,63 @@ def localize(corners, height, ids):
 
 
 
+# Localize 2 doesn't use focal length but the height of the drone
+def localize2(corners, height, ids):
+
+    # Check if ids is empty
+    if ids is None:
+        return 0, 0
+
+    # Image is 1920 by 1080 pixels
+    xPixels = 1920
+    yPixels = 1080
+
+    # Field of view, standard values for our wide fov camera
+    HFOV = 100 * np.pi / 180 
+    VFOV = 70 * np.pi / 180 
+
+    # Define the center of the image
+    cx = xPixels / 2
+    cy = yPixels / 2
+
+    # Get the centroid coordinates of the AR tag
+    firstCorners = corners[0][0]
+    topLeft = firstCorners[0]
+    bottomRight = firstCorners[2]
+
+    xf = (topLeft[0] + bottomRight[0]) / 2
+    yf = (topLeft[1] + bottomRight[1]) / 2
+
+
+    # Using the center, find the relative position of the RGV
+    # Compute the 2D normalized coordinates with respect to the intrinsic camera matrix
+    dx = height * np.tan(HFOV / 2)
+    dy = height * np.tan(VFOV / 2)
+
+    # Scaling factors
+    sx = cx / dx
+    sy = cy / dy
+
+    # Calcaulte the depth of the principal point projection on the ground
+    Zp = height    
+
+    # Distance calculation
+    d = np.sqrt(((cx - xf) / sx)**2 + ((cy - yf) / sy)**2)
+    theta = np.arctan(d / height)
+    Z = Zp / np.cos(theta)
+
+    # Bearing calculation
+    p = np.arctan2((xf - cx), (cy - yf))   
+
+    # Range and bearing output
+    range = Z
+    bearing = p * 180 / np.pi   # Deg
+
+    # Return the range and bearing measurements
+    return range, bearing
+
+
+
 # %% Main
 # Dictionary
 aruco_type = "DICT_6X6_250"
@@ -169,7 +226,7 @@ while cap.isOpened():
     cv2.imshow('frame', image)
 
     # Output the range and bearing
-    range, bearing = localize(corners, height, ids)
+    range, bearing = localize2(corners, height, ids)
 
     # Print results
     if range == 0 and bearing == 0:
