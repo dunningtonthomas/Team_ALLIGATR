@@ -245,6 +245,52 @@ def localize3(corners, height, ids):
     # Return the range and bearing measurements
     return elevation, azimuth
 
+
+# rel_localize calculates the relative x and y coordinates in the drone frame from the principle point
+def rel_localize(corners, height, ids):
+
+    # Check if ids is empty
+    if ids is None:
+        return 0, 0
+
+    # Image is 1920 by 1080 pixels
+    xPixels = 1920
+    yPixels = 1080
+
+    # Field of view, standard values for our wide fov camera
+    HFOV = 100 * np.pi / 180 
+    VFOV = 70 * np.pi / 180 
+
+    # Define the center of the image
+    cx = xPixels / 2
+    cy = yPixels / 2
+
+    # Get the centroid coordinates of the AR tag
+    firstCorners = corners[0][0]
+    topLeft = firstCorners[0]
+    bottomRight = firstCorners[2]
+
+    xf = (topLeft[0] + bottomRight[0]) / 2
+    yf = (topLeft[1] + bottomRight[1]) / 2
+
+
+    # Half of the image frame projected on the ground, distance in meters
+    dx = height * np.tan(HFOV / 2)
+    dy = height * np.tan(VFOV / 2)
+
+    # Scaling factors, conversion in pixels per meter
+    sx = cx / dx
+    sy = cy / dy
+
+    # Calcaulte the depth of the principal point projection on the ground, assume camera is pointed directly down
+    Zp = height    
+
+    # Relative coordinates
+    relX = (xf - cx) / sx
+    relY = (cy - yf) / sy
+
+    return relX, relY
+
 # %% Main
 # Dictionary
 aruco_type = "DICT_6X6_250"
@@ -252,7 +298,7 @@ testDict = cv2.aruco.getPredefinedDictionary(ARUCO_DICT[aruco_type])
 arucoParams = cv2.aruco.DetectorParameters()
 
 
-# %% Video Capture With Webcam
+# Read the Saved Video
 path = "ARTags/Videos/"
 videoPath = path + "AR_Tag_Test_Trim.mp4"
 cap = cv2.VideoCapture(videoPath)
@@ -284,6 +330,9 @@ while cap.isOpened():
     # Output the elevation and azimuth angles
     elevation, azimuth = localize3(corners, height, ids)
 
+    # Relative x and y measurements
+    relX, relY = rel_localize(corners, height, ids)
+
     # Print results
     if range == 0 and bearing == 0:
         continue
@@ -293,8 +342,12 @@ while cap.isOpened():
     #print("Bearing: ", bearing)
 
     # Output the azimuth and elevation
-    print("Azimuth:\t", azimuth)
-    print("ELevation:\t", elevation)
+    # print("Azimuth:\t", azimuth)
+    # print("ELevation:\t", elevation)
+
+    # Output relative x and y measurements
+    print("Relative X:\t", relX)
+    print("Relative Y:\t", relY)
 
     # Wait until a key is pressed
     cv2.waitKey(0)
