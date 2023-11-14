@@ -68,7 +68,7 @@ def aruco_display(corners, ids, rejected, image):
             cv2.line(image, (cx, cy), (xf,yf), (0, 255, 0), 2)
 
             # Draw Line from principle point forward along the drone x-axis
-            cv2.line(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
+            cv2.line(image, (cx, cy), (cx, cy - 100), (255, 0, 0), 2)
             
             # Resize the image
             image = cv2.resize(image, (1280, 720))                # Resize image for display
@@ -191,6 +191,59 @@ def localize2(corners, height, ids):
     return range, bearing
 
 
+# Localize 3 calculates the azimuth and elevation
+def localize3(corners, height, ids):
+
+    # Check if ids is empty
+    if ids is None:
+        return 0, 0
+
+    # Image is 1920 by 1080 pixels
+    xPixels = 1920
+    yPixels = 1080
+
+    # Field of view, standard values for our wide fov camera
+    HFOV = 100 * np.pi / 180 
+    VFOV = 70 * np.pi / 180 
+
+    # Define the center of the image
+    cx = xPixels / 2
+    cy = yPixels / 2
+
+    # Get the centroid coordinates of the AR tag
+    firstCorners = corners[0][0]
+    topLeft = firstCorners[0]
+    bottomRight = firstCorners[2]
+
+    xf = (topLeft[0] + bottomRight[0]) / 2
+    yf = (topLeft[1] + bottomRight[1]) / 2
+
+
+    # Half of the image frame projected on the ground, distance in meters
+    dx = height * np.tan(HFOV / 2)
+    dy = height * np.tan(VFOV / 2)
+
+    # Scaling factors, conversion in pixels per meter
+    sx = cx / dx
+    sy = cy / dy
+
+    # Calcaulte the depth of the principal point projection on the ground, assume camera is pointed directly down
+    Zp = height    
+
+    # Distance calculation
+    d = np.sqrt(((cx - xf) / sx)**2 + ((cy - yf) / sy)**2)
+    theta = np.arctan(d / height)
+    Z = Zp / np.cos(theta)
+
+    # Bearing calculation
+    p = np.arctan2((xf - cx), (cy - yf))   
+
+    # Range and bearing output
+    elevation = theta * 180 / np.pi
+    azimuth = p * 180 / np.pi   # Deg
+
+    # Return the range and bearing measurements
+    return elevation, azimuth
 
 # %% Main
 # Dictionary
@@ -228,12 +281,20 @@ while cap.isOpened():
     # Output the range and bearing
     range, bearing = localize2(corners, height, ids)
 
+    # Output the elevation and azimuth angles
+    elevation, azimuth = localize3(corners, height, ids)
+
     # Print results
     if range == 0 and bearing == 0:
         continue
 
-    print("Range: ", range)
-    print("Bearing: ", bearing)
+    # Output the results
+    #print("Range: ", range)
+    #print("Bearing: ", bearing)
+
+    # Output the azimuth and elevation
+    print("Azimuth:\t", azimuth)
+    print("ELevation:\t", elevation)
 
     # Wait until a key is pressed
     cv2.waitKey(0)
