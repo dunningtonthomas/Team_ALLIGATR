@@ -54,7 +54,8 @@ def aruco_display(corners, ids, rejected, image):
 
 
 # Path for aruco tags
-path = "Autonomous-AerialLocalizationTeam1/ARTags/Markers/"
+#path = "Autonomous-AerialLocalizationTeam1/ARTags/Markers/"
+path = "Markers/"
 
 # Get predefined dictionary
 aruco_type = "DICT_6X6_250"
