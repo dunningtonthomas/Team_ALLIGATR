@@ -1,6 +1,8 @@
 function drone = drone_params()
 % Mission parameters
     drone.flight_bounds = [30, 60]; %ft
+    drone.max_speed = 5; %ft/s
+    drone.radius = 20; %ft, turn radius
 
 % Drone State
     drone.x_0 = 0;
@@ -21,6 +23,7 @@ function drone = drone_params()
 
     drone.X = [drone.x_0; drone.y_0; drone.z_0; drone.pitch_0; drone.yaw_0; drone.roll_0; ...
                drone.u_0; drone.v_0; drone.w_0; drone.p_0; drone.q_0; drone.r_0];
+    drone.X0 = drone.X; 
 
 
 

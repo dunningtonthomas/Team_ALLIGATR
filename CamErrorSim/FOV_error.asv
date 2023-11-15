@@ -55,10 +55,13 @@ axes_labels = ["Horizontal", "Vertical"];
 err_lim = [0,0.2]; %ft err
 c = jet;
 
+%Store the data into a table for exporting
+T = table('Camera', 'Video Resolution', 'Frame Rate', 'Flight ')
+
     %Check the video accuracy per pixel
 for cam_num = 1:2
     for fb = flight_bounds
-        fprintf("\n <strong> %s at %0.1f ft high: </strong>\n",camera(cam_num).name, fb);
+        fprintf("\n%s at %0.1f ft high:\n",camera(cam_num).name, fb);
         for setting = 1:size(camera(cam_num).vid_res, 1)
             fprintf(" - Using video resolution of %0.0ix%0.0i %0.0ip:\n", camera(cam_num).vid_res(setting, 1), camera(cam_num).vid_res(setting, 2), camera(cam_num).vid_res(setting, 3));
             
