@@ -11,7 +11,7 @@ rgv = rgv_params();
 cam_num = 1;
 
 % Simulation parameters
-fps = 24;
+fps = 10;
 sim_duration = 10; %s
 steps = fps*sim_duration;
 
@@ -25,7 +25,7 @@ stillEOM = @(obj, X, t) [X(1)*ones(size(t)); X(2)*ones(size(t)); X(3)*ones(size(
 hoverEOM = @(obj, X, t) [X(1)*ones(size(t)); X(2)*ones(size(t)); X(3)*ones(size(t))];
 circleEOM = @(obj, X, t) [X(1) + obj.radius*sin(t); X(2) + obj.radius*cos(t); X(3)*ones(size(t))];
 sinEOM = @(obj, X, t) [X(1) + obj.radius*sin(t)+ obj.max_speed*t; X(2) + obj.max_speed*t; X(3)*ones(size(t))];
-cosEOM = @(obj, X, t) [X(1) + obj.max_speed*t + obj.radius*sin(t); X(2) + obj.radius*cos(t).^3; X(3)*ones(size(t))];
+cosEOM = @(obj, X, t) [X(1)+ obj.max_speed*t; X(2) + obj.max_speed*t  + obj.radius*cos(t); X(3)*ones(size(t))];
 
 %Measurement errors
 noise_range = 12; %ft
@@ -37,7 +37,7 @@ y_k = [];
 
 %Calculate path and set initial conditions
 rgvEOM = sinEOM;
-droneEOM = stillEOM;
+droneEOM = cosEOM;
 
 rgvPath = rgvEOM(rgv, rgv.X, t);
 dronePath = droneEOM(drone, drone.X, t);
@@ -91,8 +91,8 @@ axis equal;
 grid on;
 scatter(rgvMeasurements(1,:) - dronePath(1,:), rgvMeasurements(2,:) - dronePath(2,:), 'filled');
 %scatter(path(1,:) - dronePath(1,1), path(2,:) - dronePath(2,1), 'kx');
-plot(rgvPath(1,:) - dronePath(1,:), rgvPath(2,:) - dronePath(2,:));
-scatter(rgvPredPath(1,:), rgvPredPath(2,:), 'kx');
+plot(rgvPath(1,:) - dronePath(1,:), rgvPath(2,:) - dronePath(2,:), 'LineWidth', 3);
+plot(rgvPredPath(1,:), rgvPredPath(2,:), 'k', 'LineWidth', 2);
 legend(["Measured Pos", "True Path", "Predicted Path"]);
 xlabel("X (ft)");
 ylabel("Y (ft)");
@@ -106,8 +106,8 @@ axis equal;
 grid on;
 scatter(rgvMeasurements(1,:), rgvMeasurements(2,:), 'filled');
 %scatter(path(1,:), path(2,:), 'kx');
-plot(rgvPath(1,:), rgvPath(2,:));
-scatter(rgvPredInerPath(1,:), rgvPredInerPath(2,:), 'kx');
+plot(rgvPath(1,:), rgvPath(2,:), 'LineWidth', 3);
+plot(rgvPredInerPath(1,:), rgvPredInerPath(2,:), 'k', 'LineWidth', 2);
 legend(["Measured Pos", "True Path", "Predicted Path"]);
 xlabel("X (ft)");
 ylabel("Y (ft)");

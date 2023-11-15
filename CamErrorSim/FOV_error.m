@@ -18,7 +18,7 @@ clc; close all; clear;
     camera(1).still_res = [4608, 2592];
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%% Camera Entry 1 %%%%%%%%%%%%%%%
+%%%%%%%%%%% Camera Entry 2 %%%%%%%%%%%%%%%
     camera(2).name = "Camera Module 3 Narrow";
 
     % Camera FOV [horz_fov, vert_fov, total_fov]
