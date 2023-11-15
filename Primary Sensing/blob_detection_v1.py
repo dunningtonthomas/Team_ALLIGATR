@@ -76,7 +76,7 @@ params.minCircularity = 0.5
 
 #Filter by Color
 params.filterByColor = True
-params.blobColor = 0
+params.blobColor = 1
 
 
 # Create a detector with the parameters
@@ -95,10 +95,13 @@ cv2.destroyAllWindows()
 
 
 ## Video detector
-vid = cv2.VideoCapture(0)
+vid_path =  r'ARTags\Videos\AR_Tag_Test_Trim.mp4'
+vid = cv2.VideoCapture(vid_path)
 
 while(vid.isOpened()):
     _,frame = vid.read()
+    if frame is None:
+        break
     centroids = detectBlob(frame)
     im_with_centroids = drawCentroids(frame,centroids)
     cv2.imshow('frame',im_with_centroids)

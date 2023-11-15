@@ -52,8 +52,8 @@ def aruco_display(corners, ids, rejected, image):
     return image
 
 
-# Path for aruco tags
-path = "ARTags/Markers/"
+""" # Path for aruco tags
+path = "Markers/"
 
 # Get predefined dictionary
 aruco_type = "DICT_6X6_250"
@@ -79,20 +79,21 @@ cv2.imshow("ArUco Marker", image)
 cv2.waitKey(0)
 
 # Close all of the windows
-cv2.destroyAllWindows()
+cv2.destroyAllWindows() """
 
 
 # %% Video Capture With Webcam
-path = "ARTags/Videos/"
+path = "Videos/"
 videoPath = path + "AR_Tag_Test.mp4"
 cap = cv2.VideoCapture(videoPath)
 
-#cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-#cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
 while cap.isOpened():
     # Get the current video feed frame
     ret, img = cap.read()
+    print("in here")
     
 	# Check if the image is empty
     if img is None:
