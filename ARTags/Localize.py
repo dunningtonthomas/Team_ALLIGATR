@@ -57,25 +57,26 @@ def aruco_display(corners, ids, rejected, image):
             cy = int(yPixels / 2)
 
             # Draw the lines for the AR tag detection
-            cv2.line(image, topLeft, topRight, (0, 255, 0), 2)
-            cv2.line(image, topRight, bottomRight, (0, 255, 0), 2)
-            cv2.line(image, bottomRight, bottomLeft, (0, 255, 0), 2)
-            cv2.line(image, bottomLeft, topLeft, (0, 255, 0), 2)
-            cv2.circle(image, (xf,yf), radius=0, color=(0, 255, 0), thickness=10)
+            cv2.line(image, topLeft, topRight, (0, 0, 255), 2)
+            cv2.line(image, topRight, bottomRight, (0, 0, 255), 2)
+            cv2.line(image, bottomRight, bottomLeft, (0, 0, 255), 2)
+            cv2.line(image, bottomLeft, topLeft, (0, 0, 255), 2)
+            cv2.circle(image, (xf,yf), radius=0, color=(0, 0, 255), thickness=10)
 
             # Draw principle point and line from principle point to the centroid
-            cv2.circle(image, (cx, cy), radius=0, color=(255, 0, 0), thickness=10)
+            cv2.circle(image, (cx, cy), radius=0, color=(255, 0, 0), thickness=10)               
             cv2.line(image, (cx, cy), (xf,yf), (255, 0, 0), 2)
 
             # Draw Line from principle point forward along the drone x-axis
-            cv2.line(image, (cx, cy), (cx, cy - 100), (0, 0, 255), 2)
+            cv2.line(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
 
             # Draw Rx and Ry lines in light blue color
             cv2.line(image, (cx, cy), (xf,cy), (220, 245, 150), 2)
             cv2.line(image, (xf,cy), (xf,yf), (220, 245, 150), 2)
             
-            # Resize the image
-            #image = cv2.resize(image, (1280, 720))                # Resize image for display
+
+    # Resize the image
+    image = cv2.resize(image, (1280, 720))                # Resize image for display        
             
 
     return image
@@ -304,7 +305,7 @@ arucoParams = cv2.aruco.DetectorParameters()
 
 # Read the Saved Video
 path = "ARTags/Videos/"
-videoPath = path + "AR_Tag_Test_Short.mp4"
+videoPath = path + "AR_Tag_Aero2.mp4"
 cap = cv2.VideoCapture(videoPath)
 
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
@@ -326,7 +327,6 @@ while cap.isOpened():
     
     # Locate the Aruco tag
     corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
-    
 
     # Draw detection
     image = aruco_display(corners, ids, rejected, img)
@@ -336,17 +336,17 @@ while cap.isOpened():
     cv2.imshow('frame', image)
 
     # Output the range and bearing
-    range, bearing = localize2(corners, height, ids)
+    #range, bearing = localize2(corners, height, ids)
 
     # Output the elevation and azimuth angles
-    elevation, azimuth = localize3(corners, height, ids)
+    #elevation, azimuth = localize3(corners, height, ids)
 
     # Relative x and y measurements
-    relX, relY = rel_localize(corners, height, ids)
+    #relX, relY = rel_localize(corners, height, ids)
 
     # Print results
-    if range == 0 and bearing == 0:
-        continue
+    # if range == 0 and bearing == 0:
+    #     continue
 
     
     # Output the results
@@ -362,21 +362,23 @@ while cap.isOpened():
     # print("Relative Y:\t", relY)
 
     # Wait until a key is pressed
-    # cv2.waitKey(0)
+    cv2.waitKey(0)
     
 	# Quit
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
         break
 
+
+
 # Save images to a file
-size = (1920, 1080)    
-out = cv2.VideoWriter(path + "arDetect.mp4",cv2.VideoWriter_fourcc(*'DIVX'), 30, size)
+# size = (1920, 1080)    
+# out = cv2.VideoWriter(path + "arDetect.mp4",cv2.VideoWriter_fourcc(*'DIVX'), 30, size)
 
 # Write to ouput video object
-for i in frames:
-    out.write(i)
-out.release()
+# for i in frames:
+#     out.write(i)
+# out.release()
 
 
 cv2.destroyAllWindows()
