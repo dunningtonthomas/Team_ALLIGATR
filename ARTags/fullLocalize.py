@@ -109,12 +109,12 @@ def readSRT(path):
         rollTemp = splitLine[9].split(']')
         
         # Save relevant data
-        lat = latTemp[0]
-        long = longTemp[0]
-        alt = altTemp[0]
-        yaw = yawTemp[0]
-        pitch = pitchTemp[0]
-        roll = rollTemp[0]
+        lat = float(latTemp[0])
+        long = float(longTemp[0])
+        alt = float(altTemp[0])
+        yaw = float(yawTemp[0])
+        pitch = float(pitchTemp[0])
+        roll = float(rollTemp[0])
         
         # Create dictionary
         state = {"lat" : lat, "long" : long, "alt" : alt, "yaw" : yaw, "pitch" : pitch, "roll" : roll}
@@ -128,176 +128,6 @@ def readSRT(path):
     #Return
     return outData
 
-#### Localize 
-def localize(corners, height, ids):
-
-    # Check if ids is empty
-    if ids is None:
-        return 0, 0
-
-    # Image is 1920 by 1080 pixels
-    xPixels = 1920
-    yPixels = 1080
-
-    # Field of view, standard values for our wide fov camera
-    HFOV = 100 * np.pi / 180 
-    VFOV = 70 * np.pi / 180 
-
-    # Define the center of the image
-    cx = xPixels / 2
-    cy = yPixels / 2
-
-    # Define the focal length and principal point translation, this is the intrinsic camera matrix
-    f = 2.87
-
-    # Get the centroid coordinates of the AR tag
-    firstCorners = corners[0][0]
-    topLeft = firstCorners[0]
-    bottomRight = firstCorners[2]
-
-    xf = (topLeft[0] + bottomRight[0]) / 2
-    yf = (topLeft[1] + bottomRight[1]) / 2
-
-
-    # Using the center, find the relative position of the RGV
-    # Compute the 2D normalized coordinates with respect to the intrinsic camera matrix
-    dx = f * np.tan(HFOV / 2)
-    dy = f * np.tan(VFOV / 2)
-
-    # Scaling factors
-    sx = cx / dx
-    sy = cy / dy
-
-    # Calcaulte the depth of the principal point projection on the ground
-    Zp = height    
-
-    # Distance calculation
-    d = np.sqrt(((cx - xf) / sx)**2 + ((cy - yf) / sy)**2)
-    theta = np.arctan(d / f)
-    Z = Zp / np.cos(theta)
-
-    # Bearing calculation
-    p = np.arctan2((xf - cx), (cy - yf))   
-
-    # Range and bearing output
-    range = Z
-    bearing = p * 180 / np.pi   # Deg
-
-    # Return the range and bearing measurements
-    return range, bearing
-
-
-
-# Localize 2 doesn't use focal length but the height of the drone
-def localize2(corners, height, ids):
-
-    # Check if ids is empty
-    if ids is None:
-        return 0, 0
-
-    # Image is 1920 by 1080 pixels
-    xPixels = 1920
-    yPixels = 1080
-
-    # Field of view, standard values for our wide fov camera
-    HFOV = 100 * np.pi / 180 
-    VFOV = 70 * np.pi / 180 
-
-    # Define the center of the image
-    cx = xPixels / 2
-    cy = yPixels / 2
-
-    # Get the centroid coordinates of the AR tag
-    firstCorners = corners[0][0]
-    topLeft = firstCorners[0]
-    bottomRight = firstCorners[2]
-
-    xf = (topLeft[0] + bottomRight[0]) / 2
-    yf = (topLeft[1] + bottomRight[1]) / 2
-
-
-    # Using the center, find the relative position of the RGV
-    # Compute the 2D normalized coordinates with respect to the intrinsic camera matrix
-    dx = height * np.tan(HFOV / 2)
-    dy = height * np.tan(VFOV / 2)
-
-    # Scaling factors
-    sx = cx / dx
-    sy = cy / dy
-
-    # Calcaulte the depth of the principal point projection on the ground
-    Zp = height    
-
-    # Distance calculation
-    d = np.sqrt(((cx - xf) / sx)**2 + ((cy - yf) / sy)**2)
-    theta = np.arctan(d / height)
-    Z = Zp / np.cos(theta)
-
-    # Bearing calculation
-    p = np.arctan2((xf - cx), (cy - yf))   
-
-    # Range and bearing output
-    range = Z
-    bearing = p * 180 / np.pi   # Deg
-
-    # Return the range and bearing measurements
-    return range, bearing
-
-
-# Localize 3 calculates the azimuth and elevation
-def localize3(corners, height, ids):
-
-    # Check if ids is empty
-    if ids is None:
-        return 0, 0
-
-    # Image is 1920 by 1080 pixels
-    xPixels = 1920
-    yPixels = 1080
-
-    # Field of view, standard values for our wide fov camera
-    HFOV = 100 * np.pi / 180 
-    VFOV = 70 * np.pi / 180 
-
-    # Define the center of the image
-    cx = xPixels / 2
-    cy = yPixels / 2
-
-    # Get the centroid coordinates of the AR tag
-    firstCorners = corners[0][0]
-    topLeft = firstCorners[0]
-    bottomRight = firstCorners[2]
-
-    xf = (topLeft[0] + bottomRight[0]) / 2
-    yf = (topLeft[1] + bottomRight[1]) / 2
-
-
-    # Half of the image frame projected on the ground, distance in meters
-    dx = height * np.tan(HFOV / 2)
-    dy = height * np.tan(VFOV / 2)
-
-    # Scaling factors, conversion in pixels per meter
-    sx = cx / dx
-    sy = cy / dy
-
-    # Calcaulte the depth of the principal point projection on the ground, assume camera is pointed directly down
-    Zp = height    
-
-    # Distance calculation
-    d = np.sqrt(((cx - xf) / sx)**2 + ((cy - yf) / sy)**2)
-    theta = np.arctan(d / height)
-    Z = Zp / np.cos(theta)
-
-    # Bearing calculation
-    p = np.arctan2((xf - cx), (cy - yf))   
-
-    # Range and bearing output
-    elevation = theta * 180 / np.pi
-    azimuth = p * 180 / np.pi   # Deg
-
-    # Return the range and bearing measurements
-    return elevation, azimuth
-
 
 # rel_localize calculates the relative x and y coordinates in the drone frame from the principle point
 def rel_localize(corners, height, ids):
@@ -310,9 +140,9 @@ def rel_localize(corners, height, ids):
     xPixels = 1920
     yPixels = 1080
 
-    # Field of view, standard values for our wide fov camera
-    HFOV = 100 * np.pi / 180 
-    VFOV = 70 * np.pi / 180 
+    # Field of view, values based on the 84 diagonal fov of the MAVIC 3 camera
+    HFOV = 76.25 * np.pi / 180 
+    VFOV = 47.64 * np.pi / 180 
 
     # Define the center of the image
     cx = xPixels / 2
@@ -325,7 +155,6 @@ def rel_localize(corners, height, ids):
 
     xf = (topLeft[0] + bottomRight[0]) / 2
     yf = (topLeft[1] + bottomRight[1]) / 2
-
 
     # Half of the image frame projected on the ground, distance in meters
     dx = height * np.tan(HFOV / 2)
@@ -359,12 +188,17 @@ cap = cv2.VideoCapture(videoPath)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
+# Read the SRT file with GPS and state data
+srtPath = "ARTags/SRT_Files/Full_Localization.SRT"
+stateData = readSRT(srtPath)   # See the function definition for detailed framework of the stateData structure
+
 # Assume constant height
 height = 30
 
 # Frame list
 frames = []
 
+i = 0   # Iterator for the SRT data
 while cap.isOpened():
     # Get the current video feed frame
     ret, img = cap.read()
@@ -383,33 +217,25 @@ while cap.isOpened():
 	# Display the frame
     cv2.imshow('frame', image)
 
-    # Output the range and bearing
-    #range, bearing = localize2(corners, height, ids)
+    # SRT data
+    currFrame = stateData[i]    # State data for the current frame
+    i = i + 1                   # Update iterator
 
-    # Output the elevation and azimuth angles
-    #elevation, azimuth = localize3(corners, height, ids)
+    # Check if the AR tag was detected, if so, calculate the position
+    if ids is not None:
+        # Current height 
+        height = currFrame['alt'] * 3.28084     # Relative altitude in feet
 
-    # Relative x and y measurements
-    #relX, relY = rel_localize(corners, height, ids)
+        # Calculate the relative x and y measurements
+        relX, relY = rel_localize(corners, height, ids)
 
-    # Print results
-    # if range == 0 and bearing == 0:
-    #     continue
+        # Output relative x and y measurements
+        print("Relative X:\t", relX)
+        print("Relative Y:\t", relY)
+        print("Altitude: ", height)
 
-    
-    # Output the results
-    #print("Range: ", range)
-    #print("Bearing: ", bearing)
 
-    # Output the azimuth and elevation
-    # print("Azimuth:\t", azimuth)
-    # print("ELevation:\t", elevation)
-
-    # Output relative x and y measurements
-    # print("Relative X:\t", relX)
-    # print("Relative Y:\t", relY)
-
-    # Wait until a key is pressed
+    # Wait until a key is pressed            
     cv2.waitKey(0)
     
 	# Quit
