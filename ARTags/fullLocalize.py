@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib as mpl
 import pandas as pd
 import cv2
+import pymap3d as pm
+
 
 # ArUco dictionaries
 ARUCO_DICT = {
@@ -31,8 +33,34 @@ ARUCO_DICT = {
 
 # %% Functions
 # Highlight the detected markers
-def aruco_display(corners, ids, rejected, image):
-    if(len(corners) > 0): # Are any aruco tags detected
+def aruco_display(corners, ids, rejected, currFrame, image):
+
+    # Image is 1920 by 1080 pixels
+    xPixels = 1920
+    yPixels = 1080
+
+    # Define the center of the image
+    cx = int(xPixels / 2)
+    cy = int(yPixels / 2)
+
+    # Principle point
+    cv2.circle(image, (cx, cy), radius=0, color=(255, 0, 0), thickness=10) 
+
+    # Draw Line from principle point forward along the drone x-axis
+    cv2.line(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
+
+
+    # Draw the line facing north using the yaw angle
+    if currFrame is not None:
+        yaw = currFrame['yaw'] * np.pi / 180
+        px = round(100 * np.cos(yaw))
+        py = round(100 * np.sin(yaw)) 
+
+        # North Axis
+        cv2.line(image, (cx, cy), (cx + px, cy - py), (255, 255, 255), 2)  
+
+    # Draw AR tag detection if the marker is detected
+    if(len(corners) > 0):
         
         for (markerCorner, markerID) in zip(corners, ids):
             corners = markerCorner.reshape((4,2))
@@ -48,13 +76,6 @@ def aruco_display(corners, ids, rejected, image):
             xf = round((topLeft[0] + bottomRight[0]) / 2)
             yf = round((topLeft[1] + bottomRight[1]) / 2)
 
-            # Image is 1920 by 1080 pixels
-            xPixels = 1920
-            yPixels = 1080
-
-            # Define the center of the image
-            cx = int(xPixels / 2)
-            cy = int(yPixels / 2)
 
             # Draw the lines for the AR tag detection
             cv2.line(image, topLeft, topRight, (0, 0, 255), 2)
@@ -63,21 +84,17 @@ def aruco_display(corners, ids, rejected, image):
             cv2.line(image, bottomLeft, topLeft, (0, 0, 255), 2)
             cv2.circle(image, (xf,yf), radius=0, color=(0, 0, 255), thickness=10)
 
-            # Draw principle point and line from principle point to the centroid
-            cv2.circle(image, (cx, cy), radius=0, color=(255, 0, 0), thickness=10)               
+            # Draw line from principle point to the centroid              
             cv2.line(image, (cx, cy), (xf,yf), (255, 0, 0), 2)
-
-            # Draw Line from principle point forward along the drone x-axis
-            cv2.line(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
 
             # Draw Rx and Ry lines in light blue color
             cv2.line(image, (cx, cy), (xf,cy), (220, 245, 150), 2)
             cv2.line(image, (xf,cy), (xf,yf), (220, 245, 150), 2)
-            
 
     # Resize the image
     image = cv2.resize(image, (1280, 720))                # Resize image for display        
     return image
+
 
 #### readSRT takes as input the full path to the SRT file and returns a list of dictionaries of the drone state
 # The format of this state is a dictionary with the following format:
@@ -99,7 +116,7 @@ def readSRT(path):
         if(line[0] != '['):  # Condition for line with relevant information
             continue    # Go to the next line
         
-        # Parse string
+        # Parse string by splitting the string up by certain delimeters
         splitLine = line.split(": ")
         latTemp = splitLine[3].split(']')
         longTemp = splitLine[4].split(']')
@@ -125,7 +142,7 @@ def readSRT(path):
     # Close the file
     file.close()
 
-    #Return
+    # Return the list of dictionaries containing the state parameters at each frame
     return outData
 
 
@@ -173,6 +190,43 @@ def rel_localize(corners, height, ids):
 
     return relX, relY
 
+#### inertialCalc will calculate the inertial coordinates given the relative coordinates and state information
+# relX and relY are the relative inerial coordinates of the target RGV
+# currFrame is the current state of the drone including its GPS and state information
+# startFrame is the first state of the drone to be used for the origin of the ENU frame
+def inertialCalc(relX, relY, currFrame, startFrame):
+    # Origin
+    lat0 = startFrame["lat"]
+    lon0 = startFrame["long"]
+    h0 = 1600   # We don't care about the height
+
+    # Drone current state
+    lat = currFrame["lat"]
+    lon = currFrame["long"]
+    h = 1600   # We don't care about the height
+
+    # Calculate the ENU coordinates in meters
+    droneENU = pm.geodetic2enu(lat, lon, h, lat0, lon0, h0)
+    Edrone = droneENU[0]
+    Ndrone = droneENU[1]
+
+    # Convert the relative measurements to meters
+    relX_m = relX * 0.3048
+    relY_m = relY * 0.3048
+
+    # Get the bearing angle from the yaw measurement
+    p = currFrame['yaw'] * np.pi / 180
+
+    # Rotate the relative measurements into the ENU frame
+    Erel = np.cos(p) * relY_m + np.sin(p) * relX_m
+    Nrel = -1*np.sin(p) * relY_m + np.cos(p) * relX_m
+
+    # Calculate the RGV inertial position in the ENU frame
+    Ecoord = Edrone + Erel
+    Ncoord = Ndrone + Nrel
+
+    return Ecoord, Ncoord
+
 
 # %% Main
 # Dictionary
@@ -198,7 +252,8 @@ height = 30
 # Frame list
 frames = []
 
-i = 0   # Iterator for the SRT data
+i = 0                       # Iterator for the SRT data
+startFrame = stateData[i]   # First frame of interest
 while cap.isOpened():
     # Get the current video feed frame
     ret, img = cap.read()
@@ -206,20 +261,20 @@ while cap.isOpened():
 	# Check if the image is empty
     if img is None:
         break
+
+    # SRT data
+    currFrame = stateData[i]    # State data for the current frame
+    i = i + 1                   # Update iterator
     
     # Locate the Aruco tag
     corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
 
     # Draw detection
-    image = aruco_display(corners, ids, rejected, img)
+    image = aruco_display(corners, ids, rejected, currFrame, img)
     frames.append(image)
-    
+
 	# Display the frame
     cv2.imshow('frame', image)
-
-    # SRT data
-    currFrame = stateData[i]    # State data for the current frame
-    i = i + 1                   # Update iterator
 
     # Check if the AR tag was detected, if so, calculate the position
     if ids is not None:
@@ -229,15 +284,20 @@ while cap.isOpened():
         # Calculate the relative x and y measurements
         relX, relY = rel_localize(corners, height, ids)
 
+        # Calculate the inertial coordinates in the ENU frame
+        Ecoord, Ncoord = inertialCalc(relX, relY, currFrame, startFrame)
+        print("E: ", Ecoord)
+        print("N: ", Ncoord)
+
         # Output relative x and y measurements
-        print("Relative X:\t", relX)
-        print("Relative Y:\t", relY)
-        print("Altitude: ", height)
+        # print("Relative X:\t", relX)
+        # print("Relative Y:\t", relY)
+        # print("Altitude: ", height)
 
 
     # Wait until a key is pressed            
     cv2.waitKey(0)
-    
+                
 	# Quit
     key = cv2.waitKey(1) & 0xFF
     if key == ord("q"):
