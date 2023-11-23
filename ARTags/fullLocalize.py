@@ -4,6 +4,7 @@ import matplotlib as mpl
 import pandas as pd
 import cv2
 import pymap3d as pm
+import csv
 
 
 # ArUco dictionaries
@@ -287,10 +288,6 @@ def inertialCalc(relX, relY, currFrame, startFrame):
     Edrone = droneENU[0]
     Ndrone = droneENU[1]
 
-
-    ##### FOR NOW OUTPUT DRONE ENU COORDS
-    #return Edrone, Ndrone
-
     # Get the bearing angle from the yaw measurement
     p = currFrame['yaw'] * np.pi / 180
 
@@ -298,14 +295,11 @@ def inertialCalc(relX, relY, currFrame, startFrame):
     Erel = np.cos(p) * relX + np.sin(p) * relY
     Nrel = -1*np.sin(p) * relX + np.cos(p) * relY
 
-    #### For now output relative E and N
-    #return Erel, Nrel
-
     # Calculate the RGV inertial position in the ENU frame
-    Ecoord = Edrone + Erel
-    Ncoord = Ndrone + Nrel
+    ERGV = Edrone + Erel
+    NRGV = Ndrone + Nrel
 
-    return Ecoord, Ncoord
+    return Edrone, Ndrone, ERGV, NRGV
 
 
 
@@ -335,6 +329,16 @@ frames = []
 
 i = 0                       # Iterator for the SRT data
 startFrame = stateData[i]   # First frame of interest
+
+# Begin to write to a file
+# outputFilePath = "ARTags/OutputFiles/inertPos.csv"
+# csv_file = open(outputFilePath, 'w', newline='')
+# csv_writer = csv.writer(csv_file)
+
+# Header
+#csv_writer.writerow(['Frame', 'DroneE', 'DroneN', 'RGVE', 'RGVN'])
+
+
 while cap.isOpened():
     # Get the current video feed frame
     ret, img = cap.read()
@@ -366,7 +370,7 @@ while cap.isOpened():
         relX, relY = AR_rel_localize(corners, height, ids)
 
         # Calculate the inertial coordinates in the ENU frame in meters
-        Ecoord, Ncoord = inertialCalc(relX, relY, currFrame, startFrame)
+        Edrone, Ndrone, ERGV, NRGV = inertialCalc(relX, relY, currFrame, startFrame)
         # print("E: ", Ecoord)
         # print("N: ", Ncoord)
 
@@ -375,18 +379,28 @@ while cap.isOpened():
         # print("Relative Y:\t", relY, "\t RGV N: ", Ncoord)
 
         # Output the E and N coordinates of the detected RGV
-        print("RGV E: ", Ecoord)
-        print("RGV N: ", Ncoord)
+        print("Drone E: ", Edrone, "\tRGV E: ", ERGV)
+        print("Drone N: ", Ndrone, "\tRGV N: ", NRGV)
+    else:
+        # No RGV detected
+        relX = 0
+        relY = 0
 
+        # Calculate the inertial coordinates in the ENU frame in meters
+        Edrone, Ndrone, ERGV, NRGV = inertialCalc(relX, relY, currFrame, startFrame)
+        ERGV = 0
+        NRGV = 0    # 0 for not being detected
+
+    # Save the E and N data
+    #csv_writer.writerow([i, Edrone, Ndrone, ERGV, NRGV])
 
     # Wait until a key is pressed                      
-    cv2.waitKey(0)
+    key = cv2.waitKey(0)
                 
 	# Quit
-    key = cv2.waitKey(1) & 0xFF
+    cv2.waitKey(1)
     if key == ord("q"):
-        break
-
+        break   
 
 
 # Save images to a file
@@ -401,6 +415,9 @@ while cap.isOpened():
 
 cv2.destroyAllWindows()
 cap.release()	
+          
+# Close the file
+#csv_file.close()
 
 
 
