@@ -50,14 +50,24 @@ def aruco_display(corners, ids, rejected, currFrame, image):
     cv2.line(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
 
 
-    # Draw the line facing north using the yaw angle
+    # Draw the line facing north using the yaw angle, also draw the east direction in black
     if currFrame is not None:
         yaw = currFrame['yaw'] * np.pi / 180
-        px = round(100 * np.cos(yaw))
-        py = round(100 * np.sin(yaw)) 
+        northAng = yaw * -1                         # Angle used to draw the north line given the yaw angle
+        px = round(100 * np.sin(northAng))
+        py = round(100 * np.cos(northAng)) 
 
         # North Axis
-        cv2.line(image, (cx, cy), (cx + px, cy - py), (255, 255, 255), 2)  
+        cv2.line(image, (cx, cy), (cx + px, cy - py), (0, 0, 0), 2)  
+        
+        # East direction
+        eastAng = northAng + np.pi / 2
+        px = round(100 * np.sin(eastAng))
+        py = round(100 * np.cos(eastAng)) 
+
+        # East Axis
+        cv2.line(image, (cx, cy), (cx + px, cy - py), (255, 255, 255), 2) 
+        
 
     # Draw AR tag detection if the marker is detected
     if(len(corners) > 0):
@@ -83,6 +93,7 @@ def aruco_display(corners, ids, rejected, currFrame, image):
             cv2.line(image, bottomRight, bottomLeft, (0, 0, 255), 2)
             cv2.line(image, bottomLeft, topLeft, (0, 0, 255), 2)
             cv2.circle(image, (xf,yf), radius=0, color=(0, 0, 255), thickness=10)
+
 
             # Draw line from principle point to the centroid              
             cv2.line(image, (cx, cy), (xf,yf), (255, 0, 0), 2)
@@ -153,6 +164,10 @@ def rel_localize(corners, height, ids):
     if ids is None:
         return 0, 0
 
+    # Pitch and roll are approximately zero
+    theta = 0
+    phi = 0
+
     # Image is 1920 by 1080 pixels
     xPixels = 1920
     yPixels = 1080
@@ -161,9 +176,16 @@ def rel_localize(corners, height, ids):
     HFOV = 76.25 * np.pi / 180 
     VFOV = 47.64 * np.pi / 180 
 
+    # Focal length
+    f = 24  # mm
+
     # Define the center of the image
     cx = xPixels / 2
     cy = yPixels / 2
+
+    # Define scaling factors
+    sx = f * np.tan(VFOV/2) / cx    # mm/pixel
+    sy = f * np.tan(HFOV/2) / cy
 
     # Get the centroid coordinates of the AR tag
     firstCorners = corners[0][0]
@@ -173,20 +195,75 @@ def rel_localize(corners, height, ids):
     xf = (topLeft[0] + bottomRight[0]) / 2
     yf = (topLeft[1] + bottomRight[1]) / 2
 
-    # Half of the image frame projected on the ground, distance in meters
-    dx = height * np.tan(HFOV / 2)
-    dy = height * np.tan(VFOV / 2)
+    # Relative camera coordinates in pixels
+    yc = cy - yf
+    xc = xf - cx
 
-    # Scaling factors, conversion in pixels per meter
-    sx = cx / dx
-    sy = cy / dy
-
-    # Calcaulte the depth of the principal point projection on the ground, assume camera is pointed directly down
-    Zp = height    
+    # Calculate the angles
+    alpha = np.arctan(xc * sx / f)
+    beta = np.arctan(yc * sy / f)
 
     # Relative coordinates
-    relX = (xf - cx) / sx
-    relY = (cy - yf) / sy
+    relX = height * np.tan(alpha + theta)
+    relY = height * np.tan(beta + phi)
+
+    return relX, relY
+
+# AR_rel_localize calculates the relative x and y coordinates in the drone frame from the principle point
+# This uses the known dimensions of the AR tag and their pixel lengths to calculate the conversion factor from pixels to meters on the ground
+def AR_rel_localize(corners, height, ids):
+
+    # Check if ids is empty
+    if ids is None:
+        return 0, 0
+
+    # Pitch and roll are approximately zero
+    theta = 0
+    phi = 0
+
+    # Image is 1920 by 1080 pixels
+    xPixels = 1920
+    yPixels = 1080
+
+    # Define the center of the image
+    cx = xPixels / 2
+    cy = yPixels / 2
+
+    # Get the centroid coordinates of the AR tag and the corners
+    firstCorners = corners[0][0]
+    topLeft = firstCorners[1]
+    topRight = firstCorners[2]
+    bottomRight = firstCorners[3]
+    bottomLeft = firstCorners[0]
+
+    # Centroid
+    xf = (topLeft[0] + bottomRight[0]) / 2
+    yf = (topLeft[1] + bottomRight[1]) / 2
+
+    # Average difference between all of the corners
+    dely1 = np.abs(bottomLeft[1] - topLeft[1])
+    dely2 = np.abs(bottomRight[1] - topRight[1])
+    delx1 = np.abs(topLeft[0] - topRight[0])
+    delx2 = np.abs(bottomLeft[0] - bottomRight[0])
+
+    # Average length of the sides of the AR tag in pixels
+    delX = (dely1 + dely2 + delx1 + delx2) / 4
+
+
+    # Define AR Tag scaling factor
+    s = 0.15875 / delX               # Meters per pixel
+
+    # Relative camera coordinates in pixels
+    yc = cy - yf
+    xc = xf - cx
+
+    # Calculate the angles
+    alpha = np.arctan(xc * s / height)
+    beta = np.arctan(yc * s / height)
+
+    # Relative coordinates
+    relX = height * np.tan(alpha + theta)
+    relY = height * np.tan(beta + phi)
 
     return relX, relY
 
@@ -210,22 +287,26 @@ def inertialCalc(relX, relY, currFrame, startFrame):
     Edrone = droneENU[0]
     Ndrone = droneENU[1]
 
-    # Convert the relative measurements to meters
-    relX_m = relX * 0.3048
-    relY_m = relY * 0.3048
+
+    ##### FOR NOW OUTPUT DRONE ENU COORDS
+    #return Edrone, Ndrone
 
     # Get the bearing angle from the yaw measurement
     p = currFrame['yaw'] * np.pi / 180
 
     # Rotate the relative measurements into the ENU frame
-    Erel = np.cos(p) * relY_m + np.sin(p) * relX_m
-    Nrel = -1*np.sin(p) * relY_m + np.cos(p) * relX_m
+    Erel = np.cos(p) * relX + np.sin(p) * relY
+    Nrel = -1*np.sin(p) * relX + np.cos(p) * relY
+
+    #### For now output relative E and N
+    #return Erel, Nrel
 
     # Calculate the RGV inertial position in the ENU frame
     Ecoord = Edrone + Erel
     Ncoord = Ndrone + Nrel
 
     return Ecoord, Ncoord
+
 
 
 # %% Main
@@ -243,7 +324,7 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
 # Read the SRT file with GPS and state data
-srtPath = "ARTags/SRT_Files/Full_Localization.SRT"
+srtPath = "ARTags/SRT_Files/Full_Localization.SRT"          
 stateData = readSRT(srtPath)   # See the function definition for detailed framework of the stateData structure
 
 # Assume constant height
@@ -279,23 +360,26 @@ while cap.isOpened():
     # Check if the AR tag was detected, if so, calculate the position
     if ids is not None:
         # Current height 
-        height = currFrame['alt'] * 3.28084     # Relative altitude in feet
+        height = currFrame['alt']    # Relative altitude in meters
 
-        # Calculate the relative x and y measurements
-        relX, relY = rel_localize(corners, height, ids)
+        # Calculate the relative x and y measurements in meters
+        relX, relY = AR_rel_localize(corners, height, ids)
 
-        # Calculate the inertial coordinates in the ENU frame
+        # Calculate the inertial coordinates in the ENU frame in meters
         Ecoord, Ncoord = inertialCalc(relX, relY, currFrame, startFrame)
-        print("E: ", Ecoord)
-        print("N: ", Ncoord)
+        # print("E: ", Ecoord)
+        # print("N: ", Ncoord)
 
         # Output relative x and y measurements
-        # print("Relative X:\t", relX)
-        # print("Relative Y:\t", relY)
-        # print("Altitude: ", height)
+        # print("Relative X:\t", relX, "\t RGV E: ", Ecoord)
+        # print("Relative Y:\t", relY, "\t RGV N: ", Ncoord)
+
+        # Output the E and N coordinates of the detected RGV
+        print("RGV E: ", Ecoord)
+        print("RGV N: ", Ncoord)
 
 
-    # Wait until a key is pressed            
+    # Wait until a key is pressed                      
     cv2.waitKey(0)
                 
 	# Quit
