@@ -159,20 +159,20 @@ end
 % open(droneWrite);
 % writeVideo(droneWrite, droneFrames);
 % close(droneWrite);
-
-% RGV A
-rgvAWrite = VideoWriter('rgvAPos');
-rgvAWrite.FrameRate = 30;
-open(rgvAWrite);
-writeVideo(rgvAWrite, rgvAFrames);
-close(rgvAWrite);
-
-% RGV B
-rgvBWrite = VideoWriter('rgvBPos');
-rgvBWrite.FrameRate = 30;
-open(rgvBWrite);
-writeVideo(rgvBWrite, rgvBFrames);
-close(rgvBWrite);
+% 
+% % RGV A
+% rgvAWrite = VideoWriter('rgvAPos');
+% rgvAWrite.FrameRate = 30;
+% open(rgvAWrite);
+% writeVideo(rgvAWrite, rgvAFrames);
+% close(rgvAWrite);
+% 
+% % RGV B
+% rgvBWrite = VideoWriter('rgvBPos');
+% rgvBWrite.FrameRate = 30;
+% open(rgvBWrite);
+% writeVideo(rgvBWrite, rgvBFrames);
+% close(rgvBWrite);
 
 
 
