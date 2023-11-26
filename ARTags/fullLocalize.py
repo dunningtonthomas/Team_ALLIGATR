@@ -44,11 +44,8 @@ def aruco_display(corners, ids, rejected, currFrame, image):
     cx = int(xPixels / 2)
     cy = int(yPixels / 2)
 
-    # Principle point
-    cv2.circle(image, (cx, cy), radius=0, color=(255, 0, 0), thickness=10) 
-
     # Draw Line from principle point forward along the drone x-axis
-    cv2.line(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
+    cv2.arrowedLine(image, (cx, cy), (cx, cy - 100), (0, 255, 0), 2)
 
 
     # Draw the line facing north using the yaw angle, also draw the east direction in black
@@ -59,7 +56,7 @@ def aruco_display(corners, ids, rejected, currFrame, image):
         py = round(100 * np.cos(northAng)) 
 
         # North Axis
-        cv2.line(image, (cx, cy), (cx + px, cy - py), (0, 0, 0), 2)  
+        cv2.arrowedLine(image, (cx, cy), (cx + px, cy - py), (0, 0, 0), 2)  
         
         # East direction
         eastAng = northAng + np.pi / 2
@@ -67,8 +64,11 @@ def aruco_display(corners, ids, rejected, currFrame, image):
         py = round(100 * np.cos(eastAng)) 
 
         # East Axis
-        cv2.line(image, (cx, cy), (cx + px, cy - py), (255, 255, 255), 2) 
-        
+        cv2.arrowedLine(image, (cx, cy), (cx + px, cy - py), (255, 255, 255), 2) 
+
+    # Principle point
+    cv2.circle(image, (cx, cy), radius=0, color=(255, 0, 0), thickness=10) 
+
 
     # Draw AR tag detection if the marker is detected
     if(len(corners) > 0):
@@ -313,6 +313,7 @@ path = "ARTags/Videos/"
 videoPath = path + "Full_Localization.mp4"
 cap = cv2.VideoCapture(videoPath)
 
+# Define frame dimensions
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
@@ -323,21 +324,19 @@ stateData = readSRT(srtPath)   # See the function definition for detailed framew
 # Assume constant height
 height = 30
 
-# Frame list
+# Frame list for saving a video of output images
 frames = []
-
 i = 0                       # Iterator for the SRT data
 startFrame = stateData[i]   # First frame of interest
 
 # Begin to write to a file
-# outputFilePath = "ARTags/OutputFiles/inertPos.csv"
+# outputFilePath = "ARTags/OutputFiles/localization_1.csv"
 # csv_file = open(outputFilePath, 'w', newline='')
 # csv_writer = csv.writer(csv_file)
-
-# Header
-#csv_writer.writerow(['Frame', 'DroneE', 'DroneN', 'RGVE', 'RGVN'])
+# csv_writer.writerow(['Frame', 'DroneE', 'DroneN', 'RGVE', 'RGVN'])  # Header
 
 
+# Loop through video feed
 while cap.isOpened():
     # Get the current video feed frame
     ret, img = cap.read()
@@ -347,14 +346,14 @@ while cap.isOpened():
         break
 
     # SRT data
-    currFrame = stateData[i]    # State data for the current frame
+    currState = stateData[i]    # State data for the current frame
     i = i + 1                   # Update iterator
     
     # Locate the Aruco tag
     corners, ids, rejected = cv2.aruco.detectMarkers(img, testDict, parameters=arucoParams)
 
     # Draw detection
-    image = aruco_display(corners, ids, rejected, currFrame, img)
+    image = aruco_display(corners, ids, rejected, currState, img)
     frames.append(image)
 
 	# Display the frame
@@ -363,19 +362,13 @@ while cap.isOpened():
     # Check if the AR tag was detected, if so, calculate the position
     if ids is not None:
         # Current height 
-        height = currFrame['alt']    # Relative altitude in meters
+        height = currState['alt']    # Relative altitude in meters
 
         # Calculate the relative x and y measurements in meters
         relX, relY = AR_rel_localize(corners, height, ids)
 
         # Calculate the inertial coordinates in the ENU frame in meters
-        Edrone, Ndrone, ERGV, NRGV = inertialCalc(relX, relY, currFrame, startFrame)
-        # print("E: ", Ecoord)
-        # print("N: ", Ncoord)
-
-        # Output relative x and y measurements
-        # print("Relative X:\t", relX, "\t RGV E: ", Ecoord)
-        # print("Relative Y:\t", relY, "\t RGV N: ", Ncoord)
+        Edrone, Ndrone, ERGV, NRGV = inertialCalc(relX, relY, currState, startFrame)
 
         # Output the E and N coordinates of the detected RGV
         print("Drone E: ", Edrone, "\tRGV E: ", ERGV)
@@ -386,7 +379,7 @@ while cap.isOpened():
         relY = 0
 
         # Calculate the inertial coordinates in the ENU frame in meters
-        Edrone, Ndrone, ERGV, NRGV = inertialCalc(relX, relY, currFrame, startFrame)
+        Edrone, Ndrone, ERGV, NRGV = inertialCalc(relX, relY, currState, startFrame)
         ERGV = 0
         NRGV = 0    # 0 for not being detected
 
@@ -403,21 +396,24 @@ while cap.isOpened():
 
 
 # Save images to a file
+# outpath = "ARTags/OutputFiles/"
 # size = (1920, 1080)    
-# out = cv2.VideoWriter(path + "arDetect.mp4",cv2.VideoWriter_fourcc(*'DIVX'), 30, size)
+# out = cv2.VideoWriter(outpath + "localization_1.MP4",cv2.VideoWriter_fourcc(*'MP4V'), 30, size)
+#*'DIVX'
 
 # Write to ouput video object
 # for i in frames:
 #     out.write(i)
 # out.release()
 
+# Close output text file
+# csv_file.close()
 
+# Close all and release
 cv2.destroyAllWindows()
-cap.release()	
-          
-# Close the file
-#csv_file.close()
+cap.release()
 
+        
 
 
 
