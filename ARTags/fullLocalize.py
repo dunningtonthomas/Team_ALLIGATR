@@ -241,28 +241,27 @@ def AR_rel_localize(corners, height, ids):
     xf = (topLeft[0] + bottomRight[0]) / 2
     yf = (topLeft[1] + bottomRight[1]) / 2
 
-    # Average difference between all of the corners
-    dely1 = np.abs(bottomLeft[1] - topLeft[1])
-    dely2 = np.abs(bottomRight[1] - topRight[1])
-    delx1 = np.abs(topLeft[0] - topRight[0])
-    delx2 = np.abs(bottomLeft[0] - bottomRight[0])
+    # Length of each side of the AR Tag in pixels
+    delL1 = np.sqrt((topLeft[0] - topRight[0])**2 + (topLeft[1] - topRight[1])**2)
+    delL2 = np.sqrt((topRight[0] - bottomRight[0])**2 + (topRight[1] - bottomRight[1])**2)
+    delL3 = np.sqrt((bottomRight[0] - bottomLeft[0])**2 + (bottomRight[1] - bottomLeft[1])**2)
+    delL4 = np.sqrt((bottomLeft[0] - topLeft[0])**2 + (bottomLeft[1] - topLeft[1])**2)
 
     # Average length of the sides of the AR tag in pixels
-    delX = (dely1 + dely2 + delx1 + delx2) / 4
-
+    delL = (delL1 + delL2 + delL3 + delL4) / 4
 
     # Define AR Tag scaling factor
-    s = 0.15875 / delX               # Meters per pixel
+    s = 0.15875 / delL               # Meters per pixel
 
     # Relative camera coordinates in pixels
     yc = cy - yf
     xc = xf - cx
 
-    # Calculate the angles
+    # Calculate the angles using the distance to the RGV in the x and y axes and the height
     alpha = np.arctan(xc * s / height)
     beta = np.arctan(yc * s / height)
 
-    # Relative coordinates
+    # Relative coordinates in meters
     relX = height * np.tan(alpha + theta)
     relY = height * np.tan(beta + phi)
 
