@@ -317,8 +317,8 @@ cap = cv2.VideoCapture(videoPath)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
 
-# Read the SRT file with GPS and state data
-srtPath = "ARTags/SRT_Files/Full_Localization.SRT"          
+# Read the SRT file with GPS and state data             
+srtPath = "ARTags/SRT_Files/Full_Localization.SRT"         
 stateData = readSRT(srtPath)   # See the function definition for detailed framework of the stateData structure
 
 # Assume constant height
