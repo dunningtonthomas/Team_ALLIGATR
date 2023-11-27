@@ -330,10 +330,10 @@ i = 0                       # Iterator for the SRT data
 startFrame = stateData[i]   # First frame of interest
 
 # Begin to write to a file
-outputFilePath = "ARTags/OutputFiles/localization_1.csv"
-csv_file = open(outputFilePath, 'w', newline='')
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(['Frame', 'DroneE', 'DroneN', 'RGVE', 'RGVN', 'ID'])  # Header
+# outputFilePath = "ARTags/OutputFiles/localization_1.csv"
+# csv_file = open(outputFilePath, 'w', newline='')
+# csv_writer = csv.writer(csv_file)
+# csv_writer.writerow(['Frame', 'DroneE', 'DroneN', 'RGVE', 'RGVN', 'ID'])  # Header
 
 
 # Loop through video feed
@@ -389,7 +389,7 @@ while cap.isOpened():
         NRGV = 0    # 0 for not being detected
 
     # Save the E and N data
-    csv_writer.writerow([i, Edrone, Ndrone, ERGV, NRGV, ID])
+    #csv_writer.writerow([i, Edrone, Ndrone, ERGV, NRGV, ID])
 
     # Wait until a key is pressed                      
     key = cv2.waitKey(0)
@@ -411,7 +411,7 @@ while cap.isOpened():
 # out.release()
 
 # Close output text file
-csv_file.close()
+#csv_file.close()
 
 # Close all and release
 cv2.destroyAllWindows()
