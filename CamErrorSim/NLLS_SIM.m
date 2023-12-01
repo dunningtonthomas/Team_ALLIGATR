@@ -1,119 +1,269 @@
 clc; close all; clear;
 
-%This script will compare the errors for different video resolutions and
-%focal lengths
-drone = drone_params();
-
-%Define the equations of motion for the RGV
-rgv = rgv_params();
-
 %Select Camera to analyze in this sim
 cam_num = 1;
 
 % Simulation parameters
-fps = 10;
+fps = [1, 5, 10, 15, 30];
+color = ['b', 'm', 'r', 'g', 'k'];
 sim_duration = 10; %s
-steps = fps*sim_duration;
+sims = 1;
+cors_acc = 2*3.28084; %Accuracy needed for coarse localization (ft)
+fine_acc = 1*3.28084; %Accuracy needed for fine localization (ft)
+fail_chance = 0.25; %Chance of not detecting the rgv while in frame
+
+trial = "Trial " + (1:sims);
+legends = strings(sims*length(fps), 1);
 
 % RGV controllers
-dt = 1 / fps;
-t = linspace(0,sim_duration, steps);
+
 
 % Equations of motion (Ambiguous to the vehicle)
-forwardEOM = @(obj, X, t) [X(1) + obj.max_speed*t; X(2)*ones(size(t)); X(3)*ones(size(t))];
+forwardEOM = @(obj, X, t) [X(1) + obj.max_speed(1)*t; X(2) + obj.max_speed(2)*t; X(3) + obj.max_speed(3)*t];
 stillEOM = @(obj, X, t) [X(1)*ones(size(t)); X(2)*ones(size(t)); X(3)*ones(size(t))];
 hoverEOM = @(obj, X, t) [X(1)*ones(size(t)); X(2)*ones(size(t)); X(3)*ones(size(t))];
 circleEOM = @(obj, X, t) [X(1) + obj.radius*sin(t); X(2) + obj.radius*cos(t); X(3)*ones(size(t))];
 sinEOM = @(obj, X, t) [X(1) + obj.radius*sin(t)+ obj.max_speed*t; X(2) + obj.max_speed*t; X(3)*ones(size(t))];
 cosEOM = @(obj, X, t) [X(1)+ obj.max_speed*t; X(2) + obj.max_speed*t  + obj.radius*cos(t); X(3)*ones(size(t))];
+EOMList = {forwardEOM, hoverEOM, circleEOM}; %, sinEOM, cosEOM};
 
 %Measurement errors
 noise_range = 12; %ft
 
 % Simulate
-f1 = figure();
-rgvMeasurements = zeros(3,steps);
-y_k = [];
+f_sim = figure();
+f4 = figure();
+grid on;
 
-%Calculate path and set initial conditions
-rgvEOM = sinEOM;
-droneEOM = cosEOM;
+f_bar = figure();
+pos = [100, 100, 1000, 300];
+f_bar.Position = pos;
 
-rgvPath = rgvEOM(rgv, rgv.X, t);
-dronePath = droneEOM(drone, drone.X, t);
+err_log = -1*ones(sims * length(fps), 1); %Minimum error for each trail
+cors_log = -1*ones(sims * length(fps), 1); %Time to reach coarse localization accuracy
+fine_log = -1*ones(sims * length(fps), 1); %Time to reach fine localization accuracy
+fps_log = -1*ones(sims * length(fps), 1); %Each trial's fps
+counter = 1;
 
-for i = 1:steps
-    %Save the state for each timestep
-    drone.X(1:3) = dronePath(:,i);
-    rgv.X = rgvPath(:,i);
+for fps_i = 1:length(fps)
 
-    %Simulate noise in a measurement
-    r = (2*noise_range.*rand(2,1)) - noise_range;
-    rgvMeasurements(:,i) = rgv.X + [r;0];
-    y_k = [y_k;rgvMeasurements(:,i)];
+    %Set up the timing
+    steps = fps(fps_i)*sim_duration;
+    dt = 1 / fps(fps_i);
+    t = linspace(0,sim_duration, steps);
 
-    %Plot for each step
-    plot3(rgvPath(1,1:i), rgvPath(2,1:i), rgvPath(3,1:i), 'LineWidth', 3);
-    hold on;
-    axis equal;
-    grid on;
-    plot3(dronePath(1,1:i), dronePath(2,1:i), dronePath(3,1:i), 'LineWidth', 3);
-    scatter3(rgvMeasurements(1,1:i), rgvMeasurements(2,1:i), rgvMeasurements(3,1:i), 10, 'filled');
-    drone = plotCam(drone, cam_num);
-    hold off;
+    %Adjust legends
+    legends(counter) = fps(fps_i) + " FPS";
 
-    drawnow;
-%     pause(0.2);
+    for k = 1:sims
+        clc;
+        fprintf("Starting trial %i, %i FPS...\n", k, fps(fps_i));
+        l = fprintf("Progress:\n");
+        %This script will compare the errors for different video resolutions and
+        %focal lengths
+        drone = drone_params();
+        
+        %Define the equations of motion for the RGV
+        rgv = rgv_params();
+    
+        mes_counter = 1; %Measurement counter
+        rgvMeasurements = zeros(3,steps);
+        droneMeasurements = zeros(3,steps);
+        y_k = [];
+        t_mes = []; %measured timesteps
+        delete log;
+        
+        %Calculate path and set initial conditions
+        randEOM = @() round(ceil(rand()*length(EOMList)));
+        %rgvEOM = EOMList{randEOM()};
+        rgvEOM = stillEOM;
+        droneEOM = EOMList{randEOM()};
+        %droneEOM = circleEOM;
+        
+        rgvPath = rgvEOM(rgv, rgv.X, t);
+        dronePath = droneEOM(drone, drone.X, t);
+    
+        %Set the fps
+        fps_log(counter) = fps(fps_i);
+    
+        %f1 = figure();
+        figure(f_sim);
+        for i = 1:steps
+            fprintf(repmat('\b',1,l));
+            l = fprintf("Progress: %0.1f%%\n", (i/steps)*100);
+    
+            %Save the state for each timestep
+            drone.X(1:3) = dronePath(:,i);
+            rgv.X = rgvPath(:,i);
+        
+            %Simulate noise in a measurement
+            %r = (2*noise_range.*rand(2,1)) - noise_range;
+            %rgvMeasurements(:,i) = rgv.X + [r;0];
+            drone = plotCam(drone, cam_num);
+            
+            [rgvTemp, Xblob] = locate(drone, rgv, drone.camera(cam_num), 1);
+           
+        
+            %Plot for each step
+             plot3(rgvPath(1,1:i), rgvPath(2,1:i), rgvPath(3,1:i), 'LineWidth', 3);
+             hold on;
+             axis equal;
+             grid on;
+        
+            %Simulate errors in detection
+            detect = (rand()>fail_chance);
+
+            %Check that the drone is in camera view
+            if ~isnan(rgvTemp) & detect
+               droneMeasurements(:, mes_counter) = drone.X(1:3);
+               rgvMeasurements(:,mes_counter) = rgvTemp' + [drone.X(1:2);0];
+               y_k = [y_k;rgvMeasurements(:,mes_counter)];
+               rgvP = scatter3(Xblob(1)*(drone.camera(cam_num).proj_x(2) - drone.camera(cam_num).proj_x(1)) + drone.camera(cam_num).proj_x(1), Xblob(2)*(drone.camera(cam_num).proj_y(2) - drone.camera(cam_num).proj_y(1)) + drone.camera(cam_num).proj_y(1), 0, 100, 'red');
+               t_mes = [t_mes, t(i)];
+        
+               %Calculate the non-linear least squares for cureve fitting
+               [R_pred, ~] = NLS(y_k, rgvEOM, droneEOM, rgvMeasurements(:,1), drone.X0, t_mes);
+               log(k).err(mes_counter) = norm(R_pred-rgv.X0);
+
+               %Check if accuracy demands were met
+               if cors_log(counter) == -1 && log(k).err(mes_counter) < cors_acc
+                   cors_log(counter) = t(i);
+               end
+
+               if fine_log(counter) == -1 && log(k).err(mes_counter) < fine_acc
+                   fine_log(counter) = t(i);
+               end
+        
+               %Update the measurement counter
+               mes_counter = mes_counter +1;
+            end
+        
+            %Finish plotting
+            plot3(dronePath(1,1:i), dronePath(2,1:i), dronePath(3,1:i), 'LineWidth', 3);
+            scatter3(rgvMeasurements(1,1:mes_counter-1), rgvMeasurements(2,1:mes_counter-1), rgvMeasurements(3,1:mes_counter-1), 10, 'filled');
+            drone = plotCam(drone, cam_num);
+            title(trial(k));
+            legend(["", "RGV Actual Location", "Drone Path", "Localization Measurements"]);
+            hold off;
+        
+            drawnow;
+        %     pause(0.2);
+        end
+    
+        %delete y_k
+        
+%         %Calculate the non-linear least squares for cureve fitting
+%         [R_pred, path] = NLS(y_k, rgvEOM, droneEOM, rgvMeasurements(:,1), drone.X0, t_mes);
+%         rgvPredPath = rgvEOM(rgv, R_pred, t) - droneEOM(drone, drone.X0, t);
+%         rgvPredInerPath = rgvEOM(rgv, R_pred, t);
+%         
+%         %Display the error in ft
+%         fprintf("X error: %0.2f ft\n", abs(R_pred(1)-rgv.X0(1)));
+%         fprintf("Y error: %0.2f ft\n", abs(R_pred(2)-rgv.X0(2)));
+%         fprintf("Z error: %0.2f ft\n", abs(R_pred(3)-rgv.X0(3)));
+%         fprintf("Total Error: %0.2f ft\n", norm(R_pred-rgv.X0));
+%         
+%         %PLace the predicted path on the final sim
+%     %     figure(f1);
+%     %     hold on;
+%     %     plot3(rgvPredInerPath(1,:), rgvPredInerPath(2,:), rgvPredInerPath(3,:), 'k', 'LineWidth',4);
+%     %     hold off;
+%         
+%         
+%         %Plot the relative RGV positons relative to the drone
+%         figure();
+%         hold on;
+%         axis equal;
+%         grid on;
+%         scatter(rgvMeasurements(1,:) - droneMeasurements(1,:), rgvMeasurements(2,:) - droneMeasurements(2,:), 'filled');
+%         %scatter(path(1,:) - dronePath(1,1), path(2,:) - dronePath(2,1), 'kx');
+%         plot(rgvPath(1,:) - dronePath(1,:), rgvPath(2,:) - dronePath(2,:), 'LineWidth', 3);
+%         plot(rgvPredPath(1,:), rgvPredPath(2,:), 'k', 'LineWidth', 2);
+%         legend(["Measured Pos", "True Path", "Predicted Path"]);
+%         xlabel("X (ft)");
+%         ylabel("Y (ft)");
+%         title("Relative Measurements for Trial " + k);
+%         hold off;
+%         
+%         %Plot the RGV positons in the inertial frame
+%         figure();
+%         hold on;
+%         axis equal;
+%         grid on;
+%         scatter(rgvMeasurements(1,:), rgvMeasurements(2,:), 'filled');
+%         %scatter(path(1,:), path(2,:), 'kx');
+%         plot(rgvPath(1,:), rgvPath(2,:), 'LineWidth', 3);
+%         plot(rgvPredInerPath(1,:), rgvPredInerPath(2,:), 'k', 'LineWidth', 2);
+%         legend(["Measured Pos", "True Path", "Predicted Path"]);
+%         xlabel("X (ft)");
+%         ylabel("Y (ft)");
+%         title("Inertial Measurements for Trial " + k);
+%         hold off;
+
+        %Save the best error case
+        log(k).t_mes = t_mes; %Save the measurement times
+        try
+            err_log(counter) = min(log(k).err);
+        catch
+            err_log(counter) = cors_acc + 1;
+        end
+        
+        %Plot the error over time
+        figure(f4);
+        hold on;
+        if ~isempty(t_mes)
+            if length(t_mes) == length(log(k).err), plot(t_mes, log(k).err, color(fps_i), 'LineWidth', 2); end
+        end
+        hold off;
+    
+        %Update the box plot
+        figure(f_bar)
+        clf;
+        tl = tiledlayout(1,3,'TileSpacing','Compact');
+        title(tl, "Non-Linear Least Squares Benchmarks with " + (fail_chance*100) + "% Detection Failure");
+        nexttile
+        hold on;
+        grid on;
+        yline(cors_acc, '--', "Coarse", 'LabelVerticalAlignment', 'middle');
+        yline(fine_acc, '--',  "Fine", 'LabelVerticalAlignment', 'middle');
+        boxplot(err_log(1:counter), fps_log(1:counter))
+        title("Lowest Estimate Error");
+        xlabel("FPS");
+        ylabel("Error (ft)");
+        hold off;
+
+        nexttile
+        hold on;
+        grid on;
+        boxplot(cors_log(1:counter), fps_log(1:counter))
+        title("Coarse Requirement");
+        xlabel("FPS");
+        ylabel("Time to Reach (s)");
+        hold off;
+
+        nexttile
+        hold on;
+        grid on;
+        boxplot(fine_log(1:counter), fps_log(1:counter))
+        title("Fine Requirement");
+        xlabel("FPS");
+        ylabel("Time to Reach (s)");
+        hold off;
+        drawnow;
+
+        counter = counter+1;
+    end
 end
 
-%Calculate the non-linear least squares for cureve fitting
-[R_pred, path] = NLS(y_k, rgvEOM, droneEOM, rgvMeasurements(:,1), drone.X0, t);
-rgvPredPath = rgvEOM(rgv, R_pred, t) - droneEOM(drone, drone.X0, t);
-rgvPredInerPath = rgvEOM(rgv, R_pred, t);
-
-%Display the error in ft
-fprintf("X error: %0.2f ft\n", abs(R_pred(1)-rgv.X0(1)));
-fprintf("Y error: %0.2f ft\n", abs(R_pred(2)-rgv.X0(2)));
-fprintf("Z error: %0.2f ft\n", abs(R_pred(3)-rgv.X0(3)));
-fprintf("Total Error: %0.2f ft\n", norm(R_pred-rgv.X0));
-
-%PLace the predicted path on the final sim
-figure(f1);
+figure(f4);
 hold on;
-plot3(rgvPredInerPath(1,:), rgvPredInerPath(2,:), rgvPredInerPath(3,:), 'k', 'LineWidth',4);
+title("NLS error");
+ylabel("Initial Prediction Error (ft)");
+xlabel("Time (s)");
+legend(legends);
 hold off;
 
-
-%Plot the relative RGV positons relative to the drone
-figure();
-hold on;
-axis equal;
-grid on;
-scatter(rgvMeasurements(1,:) - dronePath(1,:), rgvMeasurements(2,:) - dronePath(2,:), 'filled');
-%scatter(path(1,:) - dronePath(1,1), path(2,:) - dronePath(2,1), 'kx');
-plot(rgvPath(1,:) - dronePath(1,:), rgvPath(2,:) - dronePath(2,:), 'LineWidth', 3);
-plot(rgvPredPath(1,:), rgvPredPath(2,:), 'k', 'LineWidth', 2);
-legend(["Measured Pos", "True Path", "Predicted Path"]);
-xlabel("X (ft)");
-ylabel("Y (ft)");
-title("Relative Measurements");
-hold off;
-
-%Plot the RGV positons in the inertial frame
-figure();
-hold on;
-axis equal;
-grid on;
-scatter(rgvMeasurements(1,:), rgvMeasurements(2,:), 'filled');
-%scatter(path(1,:), path(2,:), 'kx');
-plot(rgvPath(1,:), rgvPath(2,:), 'LineWidth', 3);
-plot(rgvPredInerPath(1,:), rgvPredInerPath(2,:), 'k', 'LineWidth', 2);
-legend(["Measured Pos", "True Path", "Predicted Path"]);
-xlabel("X (ft)");
-ylabel("Y (ft)");
-title("Inertial Measurements");
-hold off;
-
+saveas(f_bar, "Figures/NLS_Bench_RTK=" + drone.use_rtk + "_SIMS=" + sims + "_T=" + sim_duration + "_FC=" + fail_chance*100 + ".jpg");
 
 
 

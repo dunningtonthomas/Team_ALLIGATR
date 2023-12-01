@@ -1,13 +1,14 @@
 function drone = drone_params()
 % Mission parameters
     drone.flight_bounds = [30, 60]; %ft
-    drone.max_speed = 5; %ft/s
+    drone.max_speed = [3*3.28084; 3*3.28084; 1] .* (rand(3,1)*2 -1); %ft/s
     drone.radius = 20; %ft, turn radius
 
 % Drone State
-    drone.x_0 = 0;
-    drone.y_0 = 0;
-    drone.z_0 = 30; %ft
+    rand_range = 20; %ft
+    drone.x_0 = ((rand()-0.5)*rand_range);
+    drone.y_0 = ((rand()-0.5)*rand_range);
+    drone.z_0 = rand()*30 + 30; %ft
 
     drone.roll_0 = 0;
     drone.pitch_0 = 0;
@@ -26,9 +27,11 @@ function drone = drone_params()
     drone.X0 = drone.X; 
 
 %Error Simulation
+    
+    drone.use_rtk = false;
     drone.rtk_e = 1 * 0.0328084; %cm level accuracy (to ft)
     drone.gps_e = 8; %ft
-    drone.ang_e = 2; %deg, overestimate
+    drone.ang_e = deg2rad(2); %deg, overestimate
 
 
 

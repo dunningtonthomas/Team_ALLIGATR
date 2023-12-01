@@ -53,7 +53,7 @@ function [R_pred, path] = NLS(y_k, eom_rgv, eom_dr, R0, D0, t)
 
         %Termination Condition
         if norm(beta*ds) < epsilon
-            disp("Predicted Location: " + R_pred)
+            %disp("Predicted Location: " + R_pred)
             return
         end
 
@@ -66,7 +66,7 @@ function [R_pred, path] = NLS(y_k, eom_rgv, eom_dr, R0, D0, t)
         iter = iter+1;
     end
 
-    disp("Did not converge!");
+    %disp("Did not converge!");
     return
 
 end
