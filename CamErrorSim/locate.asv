@@ -1,0 +1,31 @@
+% Uses the camera localization model to try to find the RGV
+%Inputs:
+%   -drone: drone object with its state at a given time
+%   -Xf: [xf, yf] foot matrix in pixels of camera
+
+function [X, Xblob] = locate(drone, rgv, camera, setting_num)
+    %Figure out blob location
+    xRange = camera.proj_x(2) - camera.proj_x(1);
+    yRange = camera.proj_y(2) - camera.proj_y(1);
+    Xblob = (rgv.X(1:2) - [camera.proj_x(1); camera.proj_y(1)])./([xRange; yRange])  ;
+    
+    %RGV out of camera view
+%     if min(Xblob) < 0 || max(Xblob) > 1
+%         X = nan;
+%         return
+%     end
+
+    %Else it is in view
+    Xc = (camera.vid_res(setting_num, 1:2)./2)';
+    Xf = Xblob .* camera.vid_res(setting_num, 1:2)' - Xc;
+
+    %Thomas Equations
+    alpha = atan(Xf(1)*tan((camera.fov(1)/2))/Xc(1));
+    beta = atan(Xf(2)*tan((camera.fov(2)/2))/Xc(2));
+
+    %Use localization equations
+    E = (2*rand(3,1)-1).*[drone.gps_e; drone.ang_e; drone.ang_e];
+    X(1) = (drone.X(3)+E(1)) * tan( (drone.X(4)+E(2)) + alpha );
+    X(2) = (drone.X(3)+E(1)) * tan( (drone.X(5)+E(3)) + beta );
+    X(3) = E(1);
+end
