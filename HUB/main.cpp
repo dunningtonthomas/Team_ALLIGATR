@@ -1,7 +1,9 @@
 // Main HUB Script
 
+#include "headers/CORE.h"
+
 /*
-TO-DO and STRUCTURE
+$$$$$$$$$$$$$$$$ TO-DO and STRUCTURE $$$$$$$$$$$$$
 
 CAMERA (CLASS)
     -Object that can adjust focus, record, turn off and on, and take pictures, etc...
