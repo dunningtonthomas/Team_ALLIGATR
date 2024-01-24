@@ -10,11 +10,11 @@ Repository for Senior Projects files 2023-2024
 
 # Dependancies
 
--Cmake 3.15 (or later),
+-Cmake 3.15 (or later), https://medium.com/@rahulbagul330/how-to-install-cmake-on-ubuntu-18-04-linux-c585394226bf
 
--C++ compiler (Tested with GCC),
+-C++ compiler (Tested with GCC), https://code.visualstudio.com/docs/cpp/config-linux
 
--ROS Melodic,
+-ROS Melodic, https://wiki.ros.org/melodic/Installation/Ubuntu
 
 -Ubuntu 18.04
 
