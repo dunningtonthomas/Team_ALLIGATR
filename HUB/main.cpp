@@ -1,6 +1,6 @@
 // Main HUB Script
 
-#include "headers/CORE.h"
+#include "src/headers/CORE.h"
 
 /*
 TO-DO and STRUCTURE:
@@ -21,18 +21,21 @@ TO-DO and STRUCTURE:
 
 int main(){
 
-// $$$$$$$$$$$$$ PRECHECK LIST $$$$$$$$$$$$$$$$
-    //WIFI CONNECTION
+    // Print the engaging message
+    std::cout << "ENGAGING AUTO AL..." << std::endl;
 
-    //ROS CONNECTION
+    // $$$$$$$$$$$$$ PRECHECK LIST $$$$$$$$$$$$$$$$
+        //WIFI CONNECTION
 
-    //MANUAL CONTROLLER CONNECTION
+        //ROS CONNECTION
 
-    //CUBE CONNECTION
+        //MANUAL CONTROLLER CONNECTION
 
-    //CAMERA CONNECTION
+        //CUBE CONNECTION
 
-    //Wait until mode set to auto
+        //CAMERA CONNECTION
+
+        //Wait until mode set to auto
 
     return 0;
 }
