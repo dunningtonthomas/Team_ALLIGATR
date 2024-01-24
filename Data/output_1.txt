@@ -1,33 +1,66 @@
 \begin{tabular}{lllll}
+\hline
 ID & Requirement & ParentRequirement & ChildRequirement & VerificationMethod \\ 
+\hline
 \hline 
+\hline
 AUT 1 & All UAS motion, besides takeoff and landing, shall stay within the operating environment & FR 4 & AUT 1.1, 1.2 & D \\ 
+\hline
 AUT 2 & UAS shall perform all autonomous motion in a safe and controlled way. & FR 4 &  & I \\ 
+\hline
 AUT 3 & UAS shall autonomously recognize when the mission has been completed. & FR 1 & AUT 3.1 & D \\ 
+\hline
 AUT 4 & UAS shall transition between mission phases. & FR 1 &  AUT 4.1, 4.2, 4.3, 4.4, 4.5, 4.6 & D \\ 
+\hline
 AUT 5 & UAS shall autonomously execute maneuvers to allow searching of the 150 x 150 ft environment. & FR 1 &  AUT 5.1, 5.2 & D \\ 
+\hline
 AUT 6 & UAS shall autonomously execute maneuvers to allow trailing, staying within 40 ft ground distance of acquired RGV ground targets. & FR 1 & AUT 6.1 & D \\ 
+\hline
 AUT 7 & UAS shall autonomously execute maneuvers that permit data collection for coarse RGV target localization. & FR 1 & AUT 7.1 & D \\ 
+\hline
 AUT 8 & UAS shall autonomously execute maneuvers that permit data collection for fine RGV target localization. & FR 1 & AUT 8.1 & D \\ 
+\hline
 AUT 9 & UAS shall autonomously execute maneuvers that permit data collection for joint RGV target localization. & FR 1 & AUT 9.1 & D \\ 
+\hline
 AUT 10 & UAS shall autonomously transmit the necessary information to the user via a ground UI. & FR 6 & AUT 10.1, 10.2, 10.3 & D/I \\ 
+\hline
 AUT 11 & UAS shall be able to initiate and disengage the autonomous flight via a ground UI. & FR 2 & AUT 11.1, 11.2, 11.3, 11.4 & D \\ 
+\hline
 AUT 12 & The system shall be fully Robot Operating System (ROS) compatible. & FR 2 &  & I \\ 
+\hline
 UAS 1 & UAS shall accommodate for the weight and size of the sensor payloads. & FR 5 & UAS 1.1, 1.2 & A \\ 
+\hline
 UAS 2 & UAS shall provide necessary electrical power to all systems for a 15-minute flight. & FR 5 & UAS 2.1, 2.2 & T/A \\ 
+\hline
 UAS 3 & UAS shall provide the necessary computational power for all operations during a 15-minute flight. & FR 1 &  & A \\ 
+\hline
 UAS 4 & UAS shall provide the framework for manual flight. & FR 4 & UAS 4.1,  & I \\ 
+\hline
 UAS 5 & UAS shall provide the framework for autonomous flight. & FR 1 &  & I \\ 
+\hline
 UAS 6 & UAS shall have all necessary sensors to determine it's attitude and inertial position. & FR 1 &  & T/A \\ 
+\hline
 UAS 7 & UAS shall be capable of transferring and recieving all necessary data to and from the ground station UI. & FR 6 & UAS 7.1, 7.2 & T \\ 
+\hline
 UAS 8 & UAS shall be capable of storing data that will be accessible at the end of the flight. & FR 6 &  & T \\ 
+\hline
 UAS 9 & UAS shall adhere to all relevant FAA and CU airworthiness regulations. & FR 4 & UAS 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7 & I/A \\ 
+\hline
 SNS 1 & UAS shall display live aircraft states and desired RGV tracking artifacts to the operator at a ground control station through a UI. & FR 6 & SNS 1.1, 1.2, 1.3 & I/D \\ 
+\hline
 SNS 2 & UAS shall use an RGB camera as its primary sensor. & FR 1 & SNS 2.1 & I \\ 
+\hline
 SNS 3 & UAS shall have an onboard secondary sensor. & FR 1 & SNS 3.1 & I \\ 
+\hline
 SNS 4 & UAS shall be able to identify both RGVs and differentiate between them & FR 1 & SNS 4.1, 4.2, 4.3, 4.4 & D \\ 
+\hline
 SNS 5 & UAS shall maintain mostly uninterrupted visual detection of a selected RGV target within its RGB camera sensor field of view when following an RGV. & FR 1 & SNS 5.1 & D \\ 
+\hline
 SNS 6 & UAS shall not communicate with RGVs. & FR 1 & SNS 6.1, 6.2 & I \\ 
+\hline
 SNS 7 & UAS shall adhere to all FCC regulations. & FR 4 & SNS 7.1 & I/A \\ 
+\hline
 \hline 
+\hline
 \end{tabular}
+\hline

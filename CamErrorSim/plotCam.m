@@ -10,6 +10,6 @@ function drone = plotCam(drone, cam_num)
     drone.camera(cam_num).proj_y = proj_y;
 
     
-    plot3([proj_x(1),drone.X(1),proj_x(1),proj_x(end),drone.X(1),proj_x(end)], [proj_y(1), drone.X(2), proj_y(end),proj_y(end), drone.X(2), proj_y(1)], [0,drone.X(3),0,0,drone.X(3),0], 'k--');
-    plot3([proj_x(1), proj_x(1), proj_x(end), proj_x(end), proj_x(1)], [proj_y(1), proj_y(end), proj_y(end), proj_y(1), proj_y(1)], [0,0,0,0,0], 'k--');
+    %plot3([proj_x(1),drone.X(1),proj_x(1),proj_x(end),drone.X(1),proj_x(end)], [proj_y(1), drone.X(2), proj_y(end),proj_y(end), drone.X(2), proj_y(1)], [0,drone.X(3),0,0,drone.X(3),0], 'k--');
+    %plot3([proj_x(1), proj_x(1), proj_x(end), proj_x(end), proj_x(1)], [proj_y(1), proj_y(end), proj_y(end), proj_y(1), proj_y(1)], [0,0,0,0,0], 'k--');
 end

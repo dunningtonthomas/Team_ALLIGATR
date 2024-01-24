@@ -1,11 +1,22 @@
 \begin{tabular}{lllll}
+\hline
 ID & Requirement & ParentRequirement & ChildRequirement & VerificationMethod \\ 
+\hline
 \hline 
+\hline
 FR 1 & UAS shall determine autonomously how to navigate the aircraft to collect localization data on a RGV. &  & AUT 4-10, UAS 3, UAS 5-6, UAS 9, SNS 2-7 & A \\ 
+\hline
 FR 2 & UAS shall respond to flight operator inputs provided through a manual controller. &  & AUT 12, UAS 4 & D \\ 
+\hline
 FR 3 & The aircraft shall take off from and land at a designated home base that is located at least 30 ft from the outer perimeter of the mission area. &  &  & D \\ 
+\hline
 FR 4 & UAS shall perform all autonomous motion within the designated mission environment in accordance with the CU FAA certificate of authorization (2023-WSA-13256-COA). &  & AUT 1-3 & A \\ 
+\hline
 FR 5 & UAS shall provide its own power source and be untethered. &  & UAS 2 & I \\ 
+\hline
 FR 6 & All sensor data shall be logged on-board the UAS with necessary data displayed on the ground UI. &  & AUT 11, UAS 7-8, SNS 1 & D \\ 
+\hline
 \hline 
+\hline
 \end{tabular}
+\hline

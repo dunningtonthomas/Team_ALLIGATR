@@ -1,54 +1,108 @@
 \begin{tabular}{lllll}
+\hline
 ID & Requirement & ParentRequirement & ChildRequirement & VerificationMethod \\ 
+\hline
 \hline 
+\hline
 AUT 1.1 & All motion planning shall include horizontal plane bounds on UAS movement so it stays within the 150 x 150 ft mission area. & AUT 1 &  & A \\ 
+\hline
 AUT 1.2 & All motion planning shall include vertical axis bounds on UAS movement so it stays between 30 and 60 ft. & AUT 1 &  & A \\ 
+\hline
 AUT 3.1 & UAS shall initiate the landing phase after mission completion. & AUT 3 &  & D \\ 
+\hline
 AUT 4.1 & UAS shall recognize when a height of 30-60 ft relative to the ground is reached during the takeoff phase and will begin searching for RGVs. & AUT 4 &  & D \\ 
+\hline
 AUT 4.2 & UAS shall recognize when an RGV has been acquired and will begin trailing the motion of the RGV. & AUT 4 &  & D \\ 
+\hline
 AUT 4.3 & UAS shall recognize when a tracked RGV stops its motion, characterized by a speed of 0 m/s, and will then begin acquisition of data for coarse localization. & AUT 4 &  & D \\ 
+\hline
 AUT 4.4 & UAS shall recognize when an RGV has gathered data for coarse localization for at least 60 seconds and will then begin acquisition of data for fine localization. & AUT 4 &  & D \\ 
+\hline
 AUT 4.5 & UAS shall recognize when all RGVs have had data gathered for fine localization for at least 30 seconds and will then begin acquisition of data for joint localization on all RGVs. & AUT 4 &  & D \\ 
+\hline
 AUT 4.6 & UAS shall recognize when all RGVs have had data gathered for joint localization for at least 20 seconds and will register as mission complete. & AUT 4 &  & D \\ 
+\hline
 AUT 5.1 & UAS shall perform a searching flight path maneuver to allow visual searching of the entire 150 x 150 ft environment. & AUT 5 &  & D \\ 
+\hline
 AUT 5.2 & UAS shall avoid to recognize any prior localized RGVs while searching, to ensure the UAS only acquires new RGVs. & AUT 5 &  & D \\ 
+\hline
 AUT 6.1 & UAS shall be able to follow RGV motion at speeds of up to 2 m/s. & AUT 6 &  & D \\ 
+\hline
 AUT 7.1 & UAS shall perform an orbiting flight path maneuver around the RGV to gather data for coarse localization within 2 meters & AUT 7 &  & A \\ 
+\hline
 AUT 8.1 & UAS shall perform an informative flight path maneuver to gather data for fine localization  1 meter & AUT 8 &  & A \\ 
+\hline
 AUT 9.1 & UAS shall perform an informative flight path maneuver to gather data for joint localization of RGVs within 1 meter & AUT 9 &  & A \\ 
+\hline
 AUT 10.1 & UI shall display a 2D map of the 150 ft x 150 ft environment. & AUT 10 &  & I \\ 
+\hline
 AUT 10.2 & UI shall display the current drone UAS location relative to the environment. & AUT 10 &  & I \\ 
+\hline
 AUT 10.3 & UI shall display an estimated state for acquired RGV location(s) at each stage of localization. & AUT 10 &  & I \\ 
+\hline
 AUT 11.1 & UI shall have the ability to initiate the UAS mission, beginning the startup sequence. & AUT 11 &  & D \\ 
+\hline
 AUT 11.2 & UI shall have the ability to activate a hover mode for the UAS, stopping all motion and mission operations until deactivated. & AUT 11 &  & D \\ 
+\hline
 AUT 11.3 & UI shall have the ability to abort the UAS mission, commanding the UAS to return to base and land. & AUT 12 &  & D \\ 
+\hline
 AUT 11.4 & UI shall be able to switch the UAS control method to a manual handheld controller, deactivating the autonomous controller. & AUT 11 &  & D \\ 
+\hline
 UAS 1.1 & UAS shall provide adequate structural support and impact absorption for hardware protection. & UAS 1 &  & A \\ 
+\hline
 UAS 1.2 & UAS shall be equipped with proper mounting solutions for sensors. & UAS 1 &  & I \\ 
+\hline
 UAS 2.1 & UAS shall have a battery that is capable of safely providing power to all systems throughout the entire flight. & UAS 2 &  & A/D \\ 
+\hline
 UAS 2.2 & UAS or ground station shall provide computational power that handles all computational requirements for drone 
+\hline
 operation. & UAS 2 &  & I/A \\ 
+\hline
 UAS 4.1 & Systems and motors shall be calibrated to provide specific movement given an input. & UAS 4 &  & D \\ 
+\hline
 UAS 7.1 & UI design shall allow for sending and recieving of signals to and from the UAS. & UAS 7 &  & D \\ 
+\hline
 UAS 7.2 & UAS shall be able to send and recieve all signals over any distance within the operational boundaries. & UAS 7 &  & D \\ 
+\hline
 UAS 9.1 & UAS shall weigh no more than 55 pounds. & UAS 9 &  & I \\ 
+\hline
 UAS 9.2 & UAS propellers must not interfere with eachother or the UAS itself. (AM 4.2.2.2 (b)) & UAS 9 &  & D \\ 
+\hline
 UAS 9.3 & UAS transmitters and recievers shall have a diverse array of antennas. (AM 4.2.2.5 (b)) & UAS 9 &  & I \\ 
+\hline
 UAS 9.4 & Ground station tansmitters and recievers shall have a diverse array of antennas. (AM 4.2.2.5 (b)) & UAS 9 &  & I \\ 
+\hline
 UAS 9.5 & UAS shall be able to remain stable while in up to 10mph winds. & UAS 9 &  & D/A \\ 
+\hline
 UAS 9.6 & UAS shall be stable about all axes during operation. & UAS 9 &  & A \\ 
+\hline
 SNS 1.1 & All data collected during the mission shall be saved and made available for post processing. & SNS 1 &  & I \\ 
+\hline
 SNS 1.2 & Logged data shall be referenced to the aircraft’s state at the time of recording. & SNS 1 &  & I \\ 
+\hline
 SNS 1.3 & An onboard communications link shall transmit telemetry and sensing data to the ground station during flight. & SNS 1 &  & I \\ 
+\hline
 SNS 2.1 & Data collected for coarse localization shall be acquired exclusively by the primary sensor's RGB sensing capability. & SNS 2 &  & I \\ 
+\hline
 SNS 3.1 & Data collected for fine localization shall be acquired exclusively by the seconday sensor. & SNS 3 &  & I \\ 
+\hline
 SNS 4.1 & Each RGV shall be identified during the course of the mission. & SNS 4 &  & D \\ 
+\hline
 SNS 4.2 & Each RGV shall be trailed during the course of the mission. & SNS 4 &  & D \\ 
+\hline
 SNS 4.3 & Each RGV shall have data acquired for coarse localization during the course of the mission. & SNS 4 &  & D \\ 
+\hline
 SNS 4.4 & Each RGV shall have data acquired for joint localization during the course of the mission. & SNS 4 &  & D \\ 
+\hline
 SNS 5.1 & Primary sensor shall provide sensing/tracking data to the ground station during operation. & SNS 5 &  & D \\ 
+\hline
 SNS 6.1 & Any beacons mounted to an RGV shall be passive or self-powered non-GNSS markers. & SNS 6 &  & I \\ 
+\hline
 SNS 6.2 & Any beacons mounted to an RGV shall be mounted before the mission and shall be removable after the mission. & SNS 6 &  & I \\ 
+\hline
 SNS 7.1 & All radio frequency transmission shall have a frequency within a permissible bandwidth as defined by the FCC (2.4 or 5 GHz). & SNS 7 &  & I \\ 
+\hline
 \hline 
+\hline
 \end{tabular}
+\hline
