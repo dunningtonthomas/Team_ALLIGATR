@@ -15,6 +15,7 @@ Repository for Senior Projects files 2023-2024
 -C++ compiler (Tested with GCC), https://code.visualstudio.com/docs/cpp/config-linux
 
 -ROS Melodic, https://wiki.ros.org/melodic/Installation/Ubuntu
+Notes: make sure to use `catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3` on first make of catkin_ws since this repo. If you are using python for any of the packages, I have run into errors using python3 regardless of this setup. It is advisable to use python 2 whenever possible.
 
 -Ubuntu 18.04
 
