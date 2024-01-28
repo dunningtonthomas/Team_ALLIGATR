@@ -10,7 +10,7 @@ Repository for Senior Projects files 2023-2024
 
 # Dependancies
 
--Cmake 3.15 (or later), https://medium.com/@rahulbagul330/how-to-install-cmake-on-ubuntu-18-04-linux-c585394226bf
+-Cmake 3.10 (or later), https://medium.com/@rahulbagul330/how-to-install-cmake-on-ubuntu-18-04-linux-c585394226bf
 
 -C++ compiler (Tested with GCC), https://code.visualstudio.com/docs/cpp/config-linux
 
@@ -27,3 +27,5 @@ SSH (Secure Shell) allows a user to open a terminal remotely that accesses the n
 **Connecting with SSH**
 For the first time after turning on the nano on a new wifi, you need to find its IP address to connect to it. You can find it by calling `ifconfig` while plugged into a monitor. After you know its IP, you can connect to it remotely while on the same wifi using an SSH software like XMoba or Putty.
 
+# Creating a new ROS package
+**WIP** but don't forget to make every new script an executable using `chmod +x <path to package/script>`

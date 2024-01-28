@@ -22,11 +22,11 @@ source devel/setup.bash
 cd ${CURRENT_DIR} #Go back to the build directory
 
 #Opens a roscore terminal. If one already exists, it will close itself
-xterm -e "source ~./bashrc; roscore; exit; exec bash" &
+xterm -e "source ~/.bashrc; roscore; exit; exec bash" &
 
 # Launch the XTERM terminal and run the ROS node
 # Make copies of this line of code for any additional nodes
-xterm -e "source ~./bashrc; rosrun ros_beginner_package first_node.py; exec bash" &
+xterm -e "source ~/.bashrc; rosrun ros_beginner_package first_node.py; exec bash" &
 
 #Make the project using the passed in source file
 cmake -DSOURCE_FILE=${SOURCE_FILE} ..
