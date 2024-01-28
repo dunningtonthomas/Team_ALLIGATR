@@ -21,3 +21,9 @@ Notes: make sure to use `catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3` on fi
 
 -Xterm, Install with `sudo apt update` then `sudo apt-get install xterm`. This is used to open up new kernals that will run the ROS packages seperately.
 
+# Accessing the Nano using VNC
+SSH (Secure Shell) allows a user to open a terminal remotely that accesses the nano via wifi. VNC (Virtual Network Computing) allows a user to access the nano through the main desktop. The nano already comes preinstalled with ssh and a vnc viewer. There are two VNC modes with important differences: 1) Remote viewing duplicates the **current display** connected to the nano. This means that the local monitor must be on to use this mode. 2) Virtual viewing can be run headless and creates a virtual desktop on the remote computer.
+
+**Connecting with SSH**
+For the first time after turning on the nano on a new wifi, you need to find its IP address to connect to it. You can find it by calling `ifconfig` while plugged into a monitor. After you know its IP, you can connect to it remotely while on the same wifi using an SSH software like XMoba or Putty.
+
