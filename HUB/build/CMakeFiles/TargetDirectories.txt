@@ -1,3 +1,0 @@
-/home/alligator/Team_ALLIGATR/HUB/build/CMakeFiles/rebuild_cache.dir
-/home/alligator/Team_ALLIGATR/HUB/build/CMakeFiles/main.dir
-/home/alligator/Team_ALLIGATR/HUB/build/CMakeFiles/edit_cache.dir
