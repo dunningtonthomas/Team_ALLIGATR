@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
-#include "phase_step.h"
-#include "path_step.h"
+#include "phaseStep.h"
+#include "pathStep.h"
 
 class uas {
 public:
