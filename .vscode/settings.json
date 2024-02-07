@@ -1,0 +1,9 @@
+{
+    "cmake.sourceDirectory": "/home/eenaz/alligatr/Team_ALLIGATR/HUB",
+    "files.associations": {
+        "*.tcc": "cpp",
+        "tuple": "cpp",
+        "algorithm": "cpp",
+        "string": "cpp"
+    }
+}
