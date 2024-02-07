@@ -4,14 +4,14 @@
   <version>0.0.0</version>
   <description>The gatr_missionplanner package</description>
 
-  <maintainer email="eenaz@todo.todo">eenaz</maintainer>
+  <maintainer email="zvandivere@gmail.com">Zane</maintainer>
 
 
   <license>TODO</license>
 
 
  
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+  <!-- <author email="zvandivere@gmail.com">Zane</author> -->
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>

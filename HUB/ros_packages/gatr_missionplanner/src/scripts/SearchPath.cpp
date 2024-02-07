@@ -30,6 +30,7 @@ float* search(uas drone, enviornment env, float* path) {
 
     /*
      *   notes for further implementation:
+     *   add drone, enviornment class file in HUB/src
      *   env.bounds in format [[x1, y1]; [x2, y2]]
      *   drone.state in format [x, y, z]
      *   assumes variables of drone and env are public
