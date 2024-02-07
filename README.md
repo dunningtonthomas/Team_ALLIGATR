@@ -28,4 +28,4 @@ SSH (Secure Shell) allows a user to open a terminal remotely that accesses the n
 For the first time after turning on the nano on a new wifi, you need to find its IP address to connect to it. You can find it by calling `ifconfig` while plugged into a monitor. After you know its IP, you can connect to it remotely while on the same wifi using an SSH software like XMoba or Putty.
 
 # Creating a new ROS package
-**WIP** but don't forget to make every new script an executable using `chmod +x <path to package/script>`
+**WIP** but don't forget to make every new script an executable using `chmod +x <path to package/script>`. I made it automatically run this in the `engage.sh` script but its good to be aware of.
