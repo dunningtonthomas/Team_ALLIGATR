@@ -17,8 +17,24 @@ string
 -
 HUB.h
 /home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/HUB.h
+uas.h
+/home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/uas.h
 
 /home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/HUB.h
 CORE.h
 /home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/CORE.h
+
+/home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/pathStep.h
+
+/home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/phaseStep.h
+string
+-
+
+/home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/uas.h
+string
+-
+phaseStep.h
+/home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/phaseStep.h
+pathStep.h
+/home/eenaz/alligatr/Team_ALLIGATR/HUB/src/headers/pathStep.h
 

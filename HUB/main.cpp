@@ -24,6 +24,8 @@ int main(){
     // Print the engaging message
     std::cout << "ENGAGING AUTO AL..." << std::endl;
 
+    uas drone ();
+
     // $$$$$$$$$$$$$ PRECHECK LIST $$$$$$$$$$$$$$$$
         //WIFI CONNECTION
 

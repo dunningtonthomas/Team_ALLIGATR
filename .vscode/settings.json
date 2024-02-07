@@ -4,6 +4,7 @@
         "*.tcc": "cpp",
         "tuple": "cpp",
         "algorithm": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "limits": "cpp"
     }
 }
