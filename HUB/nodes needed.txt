@@ -1,0 +1,8 @@
+mission planner hub will need to pull:
+- drone position in uas class [x,y,z] every iteration
+- whether rgv A and rgv B are detected in the camera view in enviornment class
+- rgv A and rgv B position estimates in the enviornment class when detected
+
+mission planner hub will need to publish:
+- commanded waypoint [x,y,z]
+- maybe current phase string ("Takeoff") for ground station
