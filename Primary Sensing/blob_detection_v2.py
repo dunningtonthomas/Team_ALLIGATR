@@ -32,9 +32,16 @@ def detectBlob(im,display_mask):
     if display_mask:
         cv2.imshow("out",centerMask)
         cv2.waitKey(0)
+        
     # Image detector
     keypoints = detector.detect(centerMask)
 
+    # Not detected
+    if not keypoints:
+        return -1    # Return negative for no detection
+
+
+    # Consolidate into numpy arrays
     centroids_x = np.array([])
     centroids_y = np.array([])
     for keypoint in keypoints:
@@ -107,37 +114,49 @@ if mode == "im":
 
 
 if mode == "vid":
+    # Define the path
+    path = "ARTags/Videos/AR_Tag_Double.mp4"
+
     ## Video detector
-    vid = cv2.VideoCapture(r"c:\Users\ykelm\Autonomous-AerialLocalizationTeam1\Primary Sensing\Full_test_vid.mp4")
+    cap = cv2.VideoCapture(path)
 
-    # Setup output video
-    outpath = "Primary Sensing/Output Files/"
-    size = (1920, 1080)    
-    out = cv2.VideoWriter(outpath + "blob_detection_test2.MP4",cv2.VideoWriter_fourcc(*'MP4V'), 30, size)
 
-    while(vid.isOpened()):
-        print("here")
-        _,frame = vid.read()
-        if frame is None:
+    while(cap.isOpened()):
+        # Read in the frame
+        ret, img = cap.read()
+
+        # Check if image is returned
+        if img is None:
+            print("ERROR: NO IMAGE FROM VIDEO")
             break
-        cnts = detectBlob(frame,False)
-        im_with_centroids = drawCentroids(frame,cnts)
-        cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,
-               cv2.WINDOW_FULLSCREEN)
-        cv2.imshow('window',im_with_centroids)
 
-        #Write video
-        out.write(im_with_centroids)
+        # Call blob detector
+        cnts = detectBlob(img,False)
 
-        key = cv2.waitKey(500)
-        if key == 32:
-            cv2.waitKey()
-        if key == ord('q'): 
+        # Output detection
+        if cnts == -1:
+            centOut = -1
+        else:
+            centOut = []
+            for i in cnts:
+                centOut.append(i[0])
+                centOut.append(i[1])
+        
+        # Output in the form of an array
+        print(centOut)
+
+        # im_with_centroids = drawCentroids(frame,cnts)
+        # cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
+        # cv2.setWindowProperty("window",cv2.WND_PROP_FULLSCREEN,
+        #        cv2.WINDOW_FULLSCREEN)
+        # cv2.imshow('window',im_with_centroids)
+
+        # Quit
+        key = cv2.waitKey(0) & 0xFF
+        if key == ord("q"):
             break
     
     # After the loop release the vid objects
-    vid.release() 
-    out.release()
+    cap.release() 
     # Destroy all the windows 
     cv2.destroyAllWindows()
