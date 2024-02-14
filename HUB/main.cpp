@@ -37,5 +37,18 @@ int main(){
 
         //Wait until mode set to auto
 
+        // Loop until user enters "exit"
+        std::cout << "Type 'q' to quit the HUB and close all processes." << std::endl;
+        while(true){
+            // Check for user input
+            std::string input;
+            std::cin >> input;
+
+            // If user enters "exit", break the loop
+            if(input == "q"){
+                break;
+            }
+        }
+
     return 0;
 }
