@@ -41,7 +41,13 @@ end
 rgvA_Final = mean(rgvA_pos, 1);
 rgvB_Final = mean(rgvB_pos, 1);
 
+% Standard deviation
+rgvA_std = std(rgvA_pos);
+rgvB_std = std(rgvB_pos);
 
+% RMS
+rgvA_rms = norm(rgvA_std);
+rgvB_rms = norm(rgvB_std);
 
 %% Plotting
 fig1 = figure();
@@ -57,27 +63,27 @@ title('Localization Test')
 droneFrames(1) = getframe(fig1);
 
 % Loop through each frame
-for i = 2:frames
-
-    % Plot the current drone position
-    addpoints(droneLine,drone_E(i),drone_N(i));
-    drawnow
-
-    % Plot rgv if visible
-    if rgv_E(i) == 0 && rgv_N(i) == 0    % RGV not visible
-        % Save frame
-        droneFrames(i) = getframe(fig1);
-        continue
-    elseif ids(i) == 1 
-        plot(rgv_E(i), rgv_N(i), '.', 'color','r') % RGV A
-    else
-        plot(rgv_E(i), rgv_N(i), '.', 'color','b') % RGV B
-    end
-
-    % Save frame
-    droneFrames(i) = getframe(fig1);
-
-end
+% for i = 2:frames
+% 
+%     % Plot the current drone position
+%     addpoints(droneLine,drone_E(i),drone_N(i));
+%     drawnow
+% 
+%     % Plot rgv if visible
+%     if rgv_E(i) == 0 && rgv_N(i) == 0    % RGV not visible
+%         % Save frame
+%         droneFrames(i) = getframe(fig1);
+%         continue
+%     elseif ids(i) == 1 
+%         plot(rgv_E(i), rgv_N(i), '.', 'color','r') % RGV A
+%     else
+%         plot(rgv_E(i), rgv_N(i), '.', 'color','b') % RGV B
+%     end
+% 
+%     % Save frame
+%     droneFrames(i) = getframe(fig1);
+% 
+% end
 
 
 %% RGV A
@@ -91,28 +97,39 @@ xlabel('East (m)');
 ylabel('North (m)');
 title('RGV A')
 
-for i = 1:frames
-    % Plot the estimate
-    if i == frames
-        plot(rgvA_Final(1), rgvA_Final(2), '.', 'color','k', 'MarkerSize', 25)
-    end
+% for i = 1:frames
+%     % Plot the estimate
+%     if i == frames
+%         plot(rgvA_Final(1), rgvA_Final(2), '.', 'color','k', 'MarkerSize', 25)
+%     end
+% 
+%     % Plot rgv if visible
+%     if rgv_E(i) == 0 && rgv_N(i) == 0    % RGV not visible
+%         % Save the frame
+%         rgvAFrames(i) = getframe(fig2);
+%         continue
+%     end
+% 
+%     % Plot position
+%     plot(rgv_E(i), rgv_N(i), '.', 'color','r', 'MarkerSize', 20)
+% 
+%     % Animate
+%     drawnow
+% 
+%     % Save the frame
+%     rgvAFrames(i) = getframe(fig2);
+% end
 
-    % Plot rgv if visible
-    if rgv_E(i) == 0 && rgv_N(i) == 0    % RGV not visible
-        % Save the frame
-        rgvAFrames(i) = getframe(fig2);
-        continue
-    end
+% Generate points for ellipse
+theta = linspace(0, 2*pi, 100);
+x_ellipse = rgvA_Final(1) + 2*rgvA_std(1) * cos(theta);
+y_ellipse = rgvA_Final(2) + 2*rgvA_std(2) * sin(theta);
 
-    % Plot position
-    plot(rgv_E(i), rgv_N(i), '.', 'color','r', 'MarkerSize', 20)
-
-    % Animate
-    drawnow
-
-    % Save the frame
-    rgvAFrames(i) = getframe(fig2);
-end
+% Plot position
+plot(rgv_E, rgv_N, '.', 'color','r', 'MarkerSize', 20);
+plot(rgvA_Final(1), rgvA_Final(2), '.', 'color','k', 'MarkerSize', 25);
+plot(x_ellipse, y_ellipse, 'r--'); % Plot the ellipse
+text(-12.5, -9.65, {['(', num2str(rgvA_Final(1)), ', ', num2str( rgvA_Final(2)), ')', ], ['±', num2str(rgvA_rms)]}, 'VerticalAlignment', 'bottom', 'HorizontalAlignment','center');
 
 
 
@@ -127,29 +144,41 @@ xlabel('East (m)');
 ylabel('North (m)');
 title('RGV B')
 
-for i = 1:frames
+% for i = 1:frames
+% 
+%     % Plot the estimate
+%     if i == frames
+%         plot(rgvB_Final(1), rgvB_Final(2), '.', 'color','k', 'MarkerSize', 25)
+%     end
+% 
+%     % Plot rgv if visible
+%     if rgv_E(i) == 0 && rgv_N(i) == 0    % RGV not visible
+%         % Save the frame
+%         rgvBFrames(i) = getframe(fig3);
+%         continue
+%     end
+% 
+%     % Plot position
+%     plot(rgv_E(i), rgv_N(i), '.', 'color','b', 'MarkerSize', 20)
+% 
+%     % Animate
+%     drawnow
+% 
+%     % Save the frame
+%     rgvBFrames(i) = getframe(fig3);
+% end
 
-    % Plot the estimate
-    if i == frames
-        plot(rgvB_Final(1), rgvB_Final(2), '.', 'color','k', 'MarkerSize', 25)
-    end
+% Generate points for ellipse
+theta = linspace(0, 2*pi, 100);
+x_ellipse = rgvB_Final(1) + 2*rgvB_std(1) * cos(theta);
+y_ellipse = rgvB_Final(2) + 2*rgvB_std(2) * sin(theta);
 
-    % Plot rgv if visible
-    if rgv_E(i) == 0 && rgv_N(i) == 0    % RGV not visible
-        % Save the frame
-        rgvBFrames(i) = getframe(fig3);
-        continue
-    end
-
-    % Plot position
-    plot(rgv_E(i), rgv_N(i), '.', 'color','b', 'MarkerSize', 20)
-    
-    % Animate
-    drawnow
-
-    % Save the frame
-    rgvBFrames(i) = getframe(fig3);
-end
+% Plot position
+plot(rgv_E, rgv_N, '*', 'color','b', 'MarkerSize', 5);
+plot(rgvB_Final(1), rgvB_Final(2), '.', 'color','k', 'MarkerSize', 25);
+plot(x_ellipse, y_ellipse, 'r--'); % Plot the ellipse
+% Add a label with the coordinates
+text(-16.6, -1.1, {['(', num2str(rgvB_Final(1)), ', ', num2str( rgvB_Final(2)), ')', ], ['±', num2str(rgvB_rms)]}, 'VerticalAlignment', 'bottom', 'HorizontalAlignment','center');
 
 
 %% Save videos to files
